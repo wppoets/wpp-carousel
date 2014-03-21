@@ -25,12 +25,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * 
  */
-class Plugin {
-	/** Used to keep the init state of the class */
-	private static $_initialized = false;
-	
-	/** Used to store the plugin settings */
-	private static $_settings = array();
+class Plugin extends \WPP\Carousel\Base\Plugin {
 	
 	/**
 	 * Initialization point for the static class
@@ -38,21 +33,13 @@ class Plugin {
 	 * @return void No return value
 	 */
 	public static function init() {
-		if ( self::$_initialized ) return; // If initialized return
-		
-		self::content_types_init();
-
-		if ( is_admin() ) Admin::init();
-		
-		self::$_initialized = true;
-	}
-	
-	/**
-	 * add_content_types
-	 * 
-	 * @return void No return value
-	 */
-	public static function content_types_init() {
-		Content_Types\Carousel::init();
+		parent::init( array(
+			'admin_controllers' => array( 
+				"\WPP\Carousel\Admin", 
+			),
+			'content_types' => array( 
+				"\WPP\Carousel\Content_Types\Carousel"
+			),
+		) );
 	}
 }

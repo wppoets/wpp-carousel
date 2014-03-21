@@ -20,9 +20,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Admin {
-	/** Used to keep the init state of the class */
-	private static $_initialized = false;
+class Admin extends \WPP\Carousel\Base\Admin {
 
 	/**
 	 * Initialization point for the static class
@@ -30,8 +28,7 @@ class Admin {
 	 * @return void No return value
 	 */
 	public static function init() {
-		if ( self::$_initialized ) return;
-		self::$_initialized = true;
+		parent::init();
 	}
 	
 }

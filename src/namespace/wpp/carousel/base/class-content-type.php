@@ -16,7 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
@@ -64,7 +63,7 @@ abstract class Content_Type {
 		static::set_options( $options );
 		add_action( 'init', array( $static_instance, 'wp_init' ) );
 		if ( static::SHOW_DASHBOARD ) add_action( 'dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
-		static::meta_boxes_init();
+		if ( is_admin() ) static::meta_boxes_init();
 		self::$_initialized[ $static_instance ] = true;
 	}
 
