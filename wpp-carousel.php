@@ -31,22 +31,19 @@
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-if ( ! defined( 'ABSPATH' ) ) // We should not be loading this outside of wordpress
-	die();
+defined( 'ABSPATH' ) or die(); // We should not be loading this outside of wordpress
 
-if ( ! defined( 'WPP_CAROUSEL_VERSION_NUM' ) )
-	define( 'WPP_CAROUSEL_VERSION_NUM', '0.9.0' );
+defined( 'WPP_CAROUSEL_VERSION_NUM' )    or define( 'WPP_CAROUSEL_VERSION_NUM', '0.9.0' );
+defined( 'WPP_CAROUSEL_TEXT_DOMAIN' )    or define( 'WPP_CAROUSEL_TEXT_DOMAIN', 'wpp-carousel' );
+defined( 'WPP_CAROUSEL_PLUGIN_FILE' )    or define( 'WPP_CAROUSEL_PLUGIN_FILE', __FILE__ );
+defined( 'WPP_CAROUSEL_PLUGIN_PATH' )    or define( 'WPP_CAROUSEL_PLUGIN_PATH', dirname(__FILE__ ) );
+defined( 'WPP_CAROUSEL_NAMESPACE_PATH' ) or define( 'WPP_CAROUSEL_NAMESPACE_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/namespace' );
+defined( 'WPP_CAROUSEL_FUNCTION_PATH' )  or define( 'WPP_CAROUSEL_FUNCTION_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/functions' );
+defined( 'WPP_CAROUSEL_FILTER_FILE' )    or define( 'WPP_CAROUSEL_FILTER_FILE', 'wpp-carousel/wpp-carousel.php' );
 
-if ( ! defined( 'WPP_CAROUSEL_PLUGIN_FILE' ) )
-	define( 'WPP_CAROUSEL_PLUGIN_FILE', __FILE__ );
+//Include the required function files
+require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'common.php' );
+require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-autoloader.php' );
 
-if ( ! defined( 'WPP_CAROUSEL_PLUGIN_PATH' ) )
-	define( 'WPP_CAROUSEL_PLUGIN_PATH', dirname(__FILE__ ) );
-
-if ( ! defined( 'WPP_CAROUSEL_FILTER_FILE' ) )
-	define( 'WPP_CAROUSEL_FILTER_FILE', 'wpp-carousel/wpp-carousel.php' );
-
-//Include the common functions
-require_once( WPP_CAROUSEL_PLUGIN_PATH . '/src/functions/common.php' );
-
-wpp_init_class( 'WPP_Carousel', WPP_CAROUSEL_PLUGIN_PATH . '/src/classes/class-wpp-carousel.php' );
+//Make the magic happen!
+WPP\Carousel\Plugin::init();

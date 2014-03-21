@@ -37,39 +37,3 @@ if ( ! function_exists( 'wpp_debug' ) ) {
 		}
 	}
 }
-
-/**
- * Helper function for the checking if a class has been included
- * 
- * First the function checks to see if the class exists, if not it requires the file,
- * 
- * @param string $class_name The name of the class to check for
- * @param string $class_path The full path to the file to include if the class does not exists
- * @return void No return value
- */
-if ( ! function_exists( 'wpp_include_class' ) ) {
-	function wpp_include_class( $class_name, $class_path ) {
-		if ( ! class_exists( $class_name ) ) {
-			require_once( $class_path );
-		}
-	}
-}
-
-/**
- * Helper function for the checking if a class has been included and init
- * 
- * First the function checks to see if the class exists, if not it requires the file,
- * once that is complete it calls the static class function init()
- * 
- * @param string $class_name The name of the class to check for
- * @param string $class_path The full path to the file to include if the class does not exists
- * @return void No return value
- */
-if ( ! function_exists( 'wpp_init_class' ) ) {
-	function wpp_init_class( $class_name, $class_path ) {
-		wpp_include_class( $class_name, $class_path );
-		if ( method_exists( $class_name, 'init' ) ) { 
-			call_user_func( array( $class_name, 'init' ) );
-		}
-	}
-}
