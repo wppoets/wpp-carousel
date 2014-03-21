@@ -24,13 +24,13 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	const META_BOX_ID          = 'carousel_slide_meta_box';
 	const META_BOX_TITLE       = 'Carousel Slides';
 	const META_BOX_NONCE       = __FILE__;
-	
+
 	/*
 	 *  
 	 *  @return void No return value
 	 */
 	public static function meta_box_display() {
-		parrent::meta_box_display();
+		parent::meta_box_display();
 	}
 	
 	/*
@@ -38,6 +38,6 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	 *  @return void No return value
 	 */
 	public static function save_post( $post_id ) {
-		parrent::save_post( $post_id );
+		parent::save_post( $post_id );
 	}
 }

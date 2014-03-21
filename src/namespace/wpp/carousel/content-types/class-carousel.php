@@ -21,10 +21,18 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
 class Carousel extends \WPP\Carousel\Base\Content_Type {
-	const CONTENT_TYPE_ID          = 'wpp-carousel';
-	const CONTENT_NAME_SINGLE      = 'Carousel';
-	const CONTENT_NAME_PLURAL      = 'Carousels';
-	const CONTENT_TYPE_TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const POST_TYPE           = 'wpp-carousel';
+	const NAME_SINGLE         = 'Carousel';
+	const NAME_PLURAL         = 'Carousels';
+	const TEXT_DOMAIN         = WPP_CAROUSEL_TEXT_DOMAIN;
+	const IS_PUBLIC           = TRUE;
+	const EXCLUDE_FROM_SEARCH = TRUE;
+	const PUBLICLY_QUERYABLE  = FALSE;
+	const SHOW_UI             = TRUE;
+	const SHOW_IN_NAV_MENUS   = TRUE;
+	const SHOW_IN_MENU        = TRUE;
+	const SHOW_IN_ADMIN_BAR   = TRUE;
+	const SUPPORTS            = 'title';
 
 	/**
 	 * Initialization point for the static class
@@ -34,9 +42,12 @@ class Carousel extends \WPP\Carousel\Base\Content_Type {
 	 * @return void No return value
 	 */
 	public static function init( $options = array() ) {
-		parent::init( array(
-			'meta_boxes' => array( "\WPP\Carousel\Meta_Boxes\Slide" ),
-		) );
+		parent::init( 
+			array(
+				'meta_boxes' => array( "\WPP\Carousel\Meta_Boxes\Slide" ),
+			), 
+			$options 
+		);
 	}
 
 }

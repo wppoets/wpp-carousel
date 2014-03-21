@@ -43,7 +43,7 @@ abstract class Meta_Box {
 		self::$_options[ $static_instance ] = array(); //setup the static instance of the class
 		self::set_options( $options );
 		add_action( 'add_meta_boxes', array( $static_instance, 'add_meta_boxes' ) );
-		add_action( 'save_post', array( $static_instance, 'save_post', 10, 3 ) );
+		add_action( 'save_post', array( $static_instance, 'save_post' ) );
 		self::$_initialized[ $static_instance ] = true;
 	}
 	
@@ -99,7 +99,7 @@ abstract class Meta_Box {
 	 *  
 	 *  @return void No return value
 	 */
-	public static function meta_box_display( $wp_nonce_action_name = __FILE__ ) {
+	public static function meta_box_display() {
 		wp_nonce_field( static::META_BOX_NONCE, static::META_BOX_ID . '_wpnonce' );
 	}
 	

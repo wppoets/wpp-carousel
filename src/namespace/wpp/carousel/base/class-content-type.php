@@ -21,10 +21,29 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
 abstract class Content_Type {
-	const CONTENT_TYPE_ID          = 'wpp-content-type';
-	const CONTENT_NAME_SINGLE      = 'Content';
-	const CONTENT_NAME_PLURAL      = 'Contents';
-	const CONTENT_TYPE_TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const POST_TYPE           = 'wpp-content-type';
+	const NAME_SINGLE         = 'Content';
+	const NAME_PLURAL         = 'Contents';
+	const TEXT_DOMAIN         = '';
+	const DESCRIPTION         = '';
+	const IS_PUBLIC           = FALSE;
+	const EXCLUDE_FROM_SEARCH = TRUE;
+	const PUBLICLY_QUERYABLE  = self::IS_PUBLIC;
+	const SHOW_UI             = self::IS_PUBLIC;
+	const SHOW_IN_NAV_MENUS   = self::IS_PUBLIC;
+	const SHOW_IN_MENU        = self::SHOW_UI;
+	const SHOW_IN_ADMIN_BAR   = self::SHOW_IN_MENU;
+	const MENU_POSITION       = NULL;
+	const MENU_ICON           = NULL;
+	const CAPABILITY_TYPE     = 'post';
+	const MAP_META_CAP        = TRUE;
+	const HIERARCHICAL        = FALSE;
+	const SUPPORTS            = 'title,editor';
+	const TAXONOMIES          = '';
+	const HAS_ARCHIVE         = FALSE;
+	const PERMALINK_EPMASK    = EP_PERMALINK;
+	const QUERY_VAR           = self::POST_TYPE;
+	const CAN_EXPORT          = true;
 
 	protected static $_initialized = array();
 	protected static $_options = array();
@@ -45,7 +64,7 @@ abstract class Content_Type {
 
 		static::set_options( $options );
 		
-		register_post_type( static::CONTENT_TYPE_ID, self::$_options[ $static_instance ][ 'args' ] );
+		register_post_type( static::POST_TYPE, self::$_options[ $static_instance ][ 'args' ] );
 		add_action('dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
 		
 		static::meta_boxes_init();
@@ -66,32 +85,41 @@ abstract class Content_Type {
 			array ( 
 				'args' => array(
 					'labels'             => array(
-						'name'               => _x( ucfirst( strtolower( static::CONTENT_NAME_PLURAL ) ), 'post type general name', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'singular_name'      => _x( ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), 'post type singular name', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'menu_name'          => _x( ucfirst( strtolower( static::CONTENT_NAME_PLURAL ) ), 'admin menu', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'name_admin_bar'     => _x( ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), 'add new on admin bar', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'add_new'            => _x( 'Add New', strtolower( static::CONTENT_NAME_SINGLE ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'add_new_item'       => __( 'Add New ' . ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'new_item'           => __( 'New ' . ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'edit_item'          => __( 'Edit ' . ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'view_item'          => __( 'View ' . ucfirst( strtolower( static::CONTENT_NAME_SINGLE ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'all_items'          => __( 'All ' . ucfirst( strtolower( static::CONTENT_NAME_PLURAL ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'search_items'       => __( 'Search ' . ucfirst( strtolower( static::CONTENT_NAME_PLURAL ) ), static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'parent_item_colon'  => __( 'Parent ' . ucfirst( strtolower( static::CONTENT_NAME_PLURAL ) ) . ':', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'not_found'          => __( 'No ' . strtolower( static::CONTENT_NAME_PLURAL ) . ' found.', static::CONTENT_TYPE_TEXT_DOMAIN ),
-						'not_found_in_trash' => __( 'No ' . strtolower( static::CONTENT_NAME_PLURAL ) . ' found in Trash.', static::CONTENT_TYPE_TEXT_DOMAIN ),
+						'name'               => _x( ucfirst( strtolower( static::NAME_PLURAL ) ), 'post type general name', static::TEXT_DOMAIN ),
+						'singular_name'      => _x( ucfirst( strtolower( static::NAME_SINGLE ) ), 'post type singular name', static::TEXT_DOMAIN ),
+						'menu_name'          => _x( ucfirst( strtolower( static::NAME_PLURAL ) ), 'admin menu', static::TEXT_DOMAIN ),
+						'name_admin_bar'     => _x( ucfirst( strtolower( static::NAME_SINGLE ) ), 'add new on admin bar', static::TEXT_DOMAIN ),
+						'add_new'            => _x( 'Add New', strtolower( static::NAME_SINGLE ), static::TEXT_DOMAIN ),
+						'add_new_item'       => __( 'Add New ' . ucfirst( strtolower( static::NAME_SINGLE ) ), static::TEXT_DOMAIN ),
+						'new_item'           => __( 'New ' . ucfirst( strtolower( static::NAME_SINGLE ) ), static::TEXT_DOMAIN ),
+						'edit_item'          => __( 'Edit ' . ucfirst( strtolower( static::NAME_SINGLE ) ), static::TEXT_DOMAIN ),
+						'view_item'          => __( 'View ' . ucfirst( strtolower( static::NAME_SINGLE ) ), static::TEXT_DOMAIN ),
+						'all_items'          => __( 'All ' . ucfirst( strtolower( static::NAME_PLURAL ) ), static::TEXT_DOMAIN ),
+						'search_items'       => __( 'Search ' . ucfirst( strtolower( static::NAME_PLURAL ) ), static::TEXT_DOMAIN ),
+						'parent_item_colon'  => __( 'Parent ' . ucfirst( strtolower( static::NAME_PLURAL ) ) . ':', static::TEXT_DOMAIN ),
+						'not_found'          => __( 'No ' . strtolower( static::NAME_PLURAL ) . ' found.', static::TEXT_DOMAIN ),
+						'not_found_in_trash' => __( 'No ' . strtolower( static::NAME_PLURAL ) . ' found in Trash.', static::TEXT_DOMAIN ),
 					),
-					'public'             => true,
-					'publicly_queryable' => true,
-					'show_ui'            => true,
-					'show_in_menu'       => true,
-					'query_var'          => true,
-					'rewrite'            => array( 'slug' => strtolower( static::CONTENT_NAME_PLURAL ) ),
-					'capability_type'    => 'post',
-					'has_archive'        => true,
-					'hierarchical'       => false,
-					'menu_position'      => null,
-					'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt'), //, 'comments' ),
+					'description'         => static::DESCRIPTION,
+					'public'              => static::IS_PUBLIC,
+					'exclude_from_search' => static::EXCLUDE_FROM_SEARCH,
+					'publicly_queryable'  => static::PUBLICLY_QUERYABLE,
+					'show_ui'             => static::SHOW_UI,
+					'show_in_nav_menus'   => static::SHOW_IN_NAV_MENUS,
+					'show_in_menu'        => static::SHOW_IN_MENU,
+					'show_in_admin_bar'   => static::SHOW_IN_ADMIN_BAR,
+					'menu_position'       => static::MENU_POSITION,
+					'menu_icon'           => static::MENU_ICON,
+					'capability_type'     => static::CAPABILITY_TYPE,
+					'map_meta_cap'        => static::MAP_META_CAP,
+					'hierarchical'        => static::HIERARCHICAL,
+					'supports'            => explode( ',', static::SUPPORTS ),
+					'taxonomies'          => explode( ',', static::TAXONOMIES ),
+					'has_archive'         => static::HAS_ARCHIVE,
+					'permalink_epmask'    => static::PERMALINK_EPMASK,
+					'query_var'           => static::QUERY_VAR,
+					'can_export'          => static::CAN_EXPORT,
+					'rewrite'             => array( 'slug' => static::POST_TYPE ),
 				),
 				'meta_boxes' => array(),
 			),
@@ -108,11 +136,11 @@ abstract class Content_Type {
 	public static function dashboard_glance_items() {
 		$static_instance = get_called_class();
 		$labels = &self::$_options[ $static_instance ]['args']['labels'];
-		$post_type_info = get_post_type_object( static::CONTENT_TYPE_ID );
-		$num_posts = wp_count_posts( static::CONTENT_TYPE_ID );
+		$post_type_info = get_post_type_object( static::POST_TYPE );
+		$num_posts = wp_count_posts( static::POST_TYPE );
 		$num = number_format_i18n( $num_posts->publish );
 		$text = _n( $labels['singular_name'], $labels['name'], intval( $num_posts->publish ) );
-		echo '<li class="page-count ' . $post_type_info->name. '-count"><a href="edit.php?post_type=' . static::CONTENT_TYPE_ID . '">' . $num . ' ' . $text . '</a></li>';
+		echo '<li class="page-count ' . $post_type_info->name. '-count"><a href="edit.php?post_type=' . static::POST_TYPE . '">' . $num . ' ' . $text . '</a></li>';
 	}
 	
 	/*
@@ -123,7 +151,7 @@ abstract class Content_Type {
 		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $meta_box_class ) {
 			$meta_box_class::init(
 				array(
-					'post_types' => static::CONTENT_TYPE_ID,
+					'post_types' => static::POST_TYPE,
 				)
 			);
 		}
