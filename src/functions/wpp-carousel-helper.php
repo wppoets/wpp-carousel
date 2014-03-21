@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Meta_Boxes;
+<?php
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
  * All rights reserved.
@@ -20,25 +20,13 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
- class Slide extends \WPP\Carousel\Base\Meta_Box {
-	const ID           = 'carousel-slide-meta-box';
-	const TITLE        = 'Carousel Slides';
-	const NONCE_ACTION = __FILE__;
-	const TEXT_DOMAIN  = WPP_CAROUSEL_TEXT_DOMAIN;
 
-	/*
-	 *  
-	 *  @return void No return value
-	 */
-	public static function meta_box_display() {
-		parent::meta_box_display();
-	}
-	
-	/*
-	 *  
-	 *  @return void No return value
-	 */
-	public static function save_post( $post_id ) {
-		parent::save_post( $post_id );
-	}
+/**
+ * Helper function for displaying a carousel
+ * 
+ * @param string $carousel_name The name/title for the carousel to display
+ * @return void No return value
+ */
+function wpp_carousel_display( $carousel_name ) {
+	//
 }

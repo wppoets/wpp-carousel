@@ -21,10 +21,13 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
 abstract class Meta_Box {
-	const META_BOX_ID          = 'wpp_meta_box';
-	const META_BOX_TITLE       = 'WPP Meta Box';
-	const META_BOX_TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
-	const META_BOX_NONCE       = __FILE__;
+	const ID                 = 'wpp-meta-box';
+	const TITLE              = 'WPP Meta Box';
+	const TEXT_DOMAIN        = '';
+	const NONCE_ACTION       = __FILE__;
+	const INCLUDE_POST_TYPES = '';
+	const EXCLUDE_POST_TYPES = '';
+	const ALL_POST_TYPES     = FALSE;
 
 	private static $_initialized = false;
 	private static $_options = array();
@@ -38,10 +41,8 @@ abstract class Meta_Box {
 	 */
 	public static function init( $options = array() ) {
 		$static_instance = get_called_class();
-		wpp_debug( __METHOD__ . ': $static_instance = ' . $static_instance);
+		static::set_options( $options, TRUE ); //No mater if the init as been run before we want to set the options with merge on
 		if ( ! empty( self::$_initialized[ $static_instance ] ) ) { return; }
-		self::$_options[ $static_instance ] = array(); //setup the static instance of the class
-		self::set_options( $options );
 		add_action( 'add_meta_boxes', array( $static_instance, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $static_instance, 'save_post' ) );
 		self::$_initialized[ $static_instance ] = true;
@@ -54,14 +55,16 @@ abstract class Meta_Box {
 	 * 
 	 * @return void No return value
 	 */
-	public static function set_options( $options, $overwrite = FALSE ) {
+	public static function set_options( $options, $merge = FALSE ) {
 		$static_instance = get_called_class();
-		self::$_options[ $static_instance ] = array_merge_recursive(
+		if ( empty( self::$_options[ $static_instance ] ) ) self::$_options[ $static_instance ] = array(); //setup an empty instance if empty
+		self::$_options[ $static_instance ] = wpp_array_merge_nested(
 			array( //Default options
-				'post_types' => array(), 
-				'all_types' => FALSE ,
+				'include_post_types' => explode( ',', static::INCLUDE_POST_TYPES ),
+				'exclude_post_types' => explode( ',', static::EXCLUDE_POST_TYPES ),
+				'all_post_types' => static::ALL_POST_TYPES,
 			),
-			( $overwrite ) ? array() : self::$_options[ $static_instance ], //if ! $overwrite add the current options to the merge
+			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
 		);
 	}
@@ -82,15 +85,26 @@ abstract class Meta_Box {
 	 */
 	public static function add_meta_boxes() {
 		$static_instance = get_called_class();
-		if ( ! empty( self::$_options[ $static_instance ][ 'all_types' ] ) ) {
-			self::$_options[ $static_instance ][ 'post_types' ] = get_post_types( 'public', 'names' );
+		$options = &self::$_options[ $static_instance ];
+		$post_types = array();
+		if ( ! empty( $options[ 'all_post_types' ] ) ) {
+			$post_types = get_post_types( 'public', 'names' );
+		} else { 
+			$post_types = $options[ 'include_post_types' ];
 		}
-		foreach ( (array) self::$_options[ $static_instance ][ 'post_types' ] as $current_post_type ) {
+		$post_types = array_unique( $post_types );
+		foreach( $options[ 'exclude_post_types' ] as $exclude_post_type ) {
+			$matched_key = array_search( $exclude_post_type, $post_types );
+			if( ! empty( $matched_key ) ) {
+				unset( $post_types[ $matched_key] ); //Remove the excluded post type
+			}
+		}
+		foreach ( $post_types as $post_type ) {
 			add_meta_box(
-				static::META_BOX_ID,
-				__( static::META_BOX_TITLE, static::META_BOX_TEXT_DOMAIN ),
+				static::ID,
+				__( static::TITLE, static::TEXT_DOMAIN ),
 				array( $static_instance, 'meta_box_display' ),
-				$current_post_type
+				$post_type
 			);
 		}
 	}
@@ -100,7 +114,7 @@ abstract class Meta_Box {
 	 *  @return void No return value
 	 */
 	public static function meta_box_display() {
-		wp_nonce_field( static::META_BOX_NONCE, static::META_BOX_ID . '_wpnonce' );
+		wp_nonce_field( static::NONCE_ACTION, static::ID . '-wpnonce' );
 	}
 	
 	/*
@@ -111,6 +125,6 @@ abstract class Meta_Box {
 		if ( ! current_user_can( 'edit_page', $post_id ) ) { return; } //Check users permissions
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )  { return; } //Check skip if we are only auto saving
 		if ( wp_is_post_revision( $post_id ) ) { return; } //Check to make sure it is not a revision
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::META_BOX_ID . '_wpnonce', FILTER_SANITIZE_STRING ), static::META_BOX_NONCE ) ) { return; } //Verify the form
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::ID . '-wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) { return; } //Verify the form
 	}
 }

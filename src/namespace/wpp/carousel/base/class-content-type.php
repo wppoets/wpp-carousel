@@ -44,6 +44,7 @@ abstract class Content_Type {
 	const PERMALINK_EPMASK    = EP_PERMALINK;
 	const QUERY_VAR           = self::POST_TYPE;
 	const CAN_EXPORT          = true;
+	const SHOW_DASHBOARD      = FALSE;
 
 	protected static $_initialized = array();
 	protected static $_options = array();
@@ -57,18 +58,13 @@ abstract class Content_Type {
 	 */
 	public static function init( $options = array() ) {
 		$static_instance = get_called_class();
-		wpp_debug( __METHOD__ . ': $static_instance = ' . $static_instance);
+		//wpp_debug( __METHOD__ . ': $static_instance = ' . $static_instance);
 		if ( ! empty( self::$_initialized[ $static_instance ] ) ) { return; }
-
 		self::$_options[ $static_instance ]    = array(); //setup the static instance of the class
-
 		static::set_options( $options );
-		
-		register_post_type( static::POST_TYPE, self::$_options[ $static_instance ][ 'args' ] );
-		add_action('dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
-		
+		add_action( 'init', array( $static_instance, 'wp_init' ) );
+		if ( static::SHOW_DASHBOARD ) add_action( 'dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
 		static::meta_boxes_init();
-
 		self::$_initialized[ $static_instance ] = true;
 	}
 
@@ -81,7 +77,7 @@ abstract class Content_Type {
 	 */
 	public static function set_options( $options, $overwrite = FALSE ) {
 		$static_instance = get_called_class();
-		self::$_options[ $static_instance ] = array_merge_recursive(
+		self::$_options[ $static_instance ] = wpp_array_merge_nested(
 			array ( 
 				'args' => array(
 					'labels'             => array(
@@ -128,7 +124,23 @@ abstract class Content_Type {
 		);
 	}
 
+	/*
+	 * get function for the option array
+	 *  
+	 * @return array Returns the option array
+	 */
+	public static function get_options() {
+		$static_instance = get_called_class();
+		return self::$_options[ $static_instance ];
+	}
 
+	/*
+	 *
+	 */
+	public static function wp_init() {
+		$static_instance = get_called_class();
+		register_post_type( static::POST_TYPE, self::$_options[ $static_instance ][ 'args' ] );
+	}
 	
 	/*
 	 *
@@ -151,7 +163,7 @@ abstract class Content_Type {
 		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $meta_box_class ) {
 			$meta_box_class::init(
 				array(
-					'post_types' => static::POST_TYPE,
+					'include_post_types' => array( static::POST_TYPE ),
 				)
 			);
 		}

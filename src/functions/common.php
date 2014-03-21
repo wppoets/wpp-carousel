@@ -37,3 +37,29 @@ if ( ! function_exists( 'wpp_debug' ) ) {
 		}
 	}
 }
+
+/**
+ * Helper function merging nested arrays
+ * 
+ * @param array $... Will loop through all arrays passed in
+ * @return array the merged array
+ */
+if ( ! function_exists( 'wpp_array_merge_nested' ) ) {
+	function wpp_array_merge_nested() {
+		$return_array = array();
+		foreach( func_get_args() as $a ) {
+			foreach( (array) $a as $k => $v ) {
+				if ( is_int( $k ) ) {
+					$return_array[] = $v;
+				} elseif ( ! isset( $return_array[ $k ] ) || ! is_array( $v ) ) {
+					$return_array[ $k ] = $v;
+				} else {
+					$return_array[ $k ] = wpp_array_merge_nested( $return_array[ $k ], $v );
+				}
+				unset( $k, $v );
+			}
+			unset( $a );
+		}
+		return $return_array;
+	}
+}

@@ -44,6 +44,7 @@ defined( 'WPP_CAROUSEL_FILTER_FILE' )    or define( 'WPP_CAROUSEL_FILTER_FILE', 
 //Include the required function files
 require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'common.php' );
 require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-autoloader.php' );
+require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-helper.php' );
 
 //Make the magic happen!
 WPP\Carousel\Plugin::init();

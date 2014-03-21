@@ -53,6 +53,6 @@ class Plugin {
 	 * @return void No return value
 	 */
 	public static function content_types_init() {
-		add_action( 'init', array( "\WPP\Carousel\Content_Types\Carousel", 'init' ) );
+		Content_Types\Carousel::init();
 	}
 }
