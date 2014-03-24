@@ -144,8 +144,8 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 								TRUE
 							);
 							if ( ! is_wp_error( $insert_post_return ) ) {
-								if ( 'false' !== $active_row[ 'post_id' ] && ! empty( $active_row[ 'image_id' ] ) && 'false' !== $active_row[ 'image_id' ] ) {
-									add_post_meta( $active_row[ 'post_id' ], '_thumbnail_id', $active_row[ 'image_id' ], TRUE ) || update_post_meta( $active_row[ 'post_id' ], '_thumbnail_id', $active_row[ 'image_id' ]);
+								if ( ! empty( $active_row[ 'image_id' ] ) && 'false' !== $active_row[ 'image_id' ] ) {
+									add_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ]);
 								}
 							}
 							unset( $insert_post_return );

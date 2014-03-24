@@ -45,6 +45,7 @@ abstract class Content_Type {
 	const CAN_EXPORT          = TRUE;
 	const SHOW_DASHBOARD      = FALSE;
 	const DISABLE_QUICK_EDIT  = FALSE;
+	const CASCADE_DELETE      = FALSE;
 
 	protected static $_initialized = array();
 	protected static $_options = array();
@@ -59,8 +60,8 @@ abstract class Content_Type {
 	public static function init( $options = array() ) {
 		$static_instance = get_called_class();
 		//wpp_debug( __METHOD__ . ': $static_instance = ' . $static_instance);
-		if ( ! empty( self::$_initialized[ $static_instance ] ) ) { return; }
-		self::$_options[ $static_instance ]    = array(); //setup the static instance of the class
+		if ( ! empty( self::$_initialized[ $static_instance ] ) ) return;
+		self::$_options[ $static_instance ] = array(); //setup the static instance of the class
 		static::set_options( $options );
 		add_action( 'init', array( $static_instance, 'wp_init' ) );
 		if ( static::SHOW_DASHBOARD ) add_action( 'dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
@@ -72,6 +73,7 @@ abstract class Content_Type {
 				add_action( 'page_row_actions', array( $static_instance, 'disable_quick_edit_post_row_actions' ), 10, 2 );
 			}
 		}
+		if ( static::CASCADE_DELETE ) add_action( 'delete_post', array( $static_instance, 'delete_post_cascade' ) );
 		self::$_initialized[ $static_instance ] = true;
 	}
 
@@ -81,6 +83,25 @@ abstract class Content_Type {
 	public static function is_initialized() {
 		$static_instance = get_called_class();
 		return ( empty( self::$_initialized[ $static_instance ] ) ? FALSE : TRUE );
+	}
+
+	/*
+	 *
+	 */
+	public static function delete_post_cascade( $post_id ) {
+		if ( static::POST_TYPE !== get_post_type( $post_id ) ) return;
+		$cascade_posts = new \WP_Query( array(
+			'post_type'      => get_post_types( array(), 'names' ), // Need to use get_post_types because 'any' doesnt work as expected
+			'post_parent'    => $post_id,
+			'post_status'    => 'any',
+			'nopaging'       => TRUE,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		) );
+		$cascade_post_ids = ( empty( $cascade_posts->posts ) ? array() : $cascade_posts->posts );
+		foreach ( (array) $cascade_post_ids as $cascade_post_id ) {
+			wp_delete_post( $cascade_post_id, TRUE );
+		}
 	}
 
 	/*

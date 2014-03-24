@@ -34,6 +34,7 @@ class Carousel extends \WPP\Carousel\Base\Content_Type {
 	const SHOW_IN_ADMIN_BAR   = TRUE;
 	const SUPPORTS            = 'title';
 	const DISABLE_QUICK_EDIT  = TRUE;
+	const CASCADE_DELETE      = TRUE;
 
 	/**
 	 * Initialization point for the static class
