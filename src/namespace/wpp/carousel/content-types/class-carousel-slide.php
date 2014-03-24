@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel;
+<?php namespace WPP\Carousel\Content_Types;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
  * All rights reserved.
@@ -18,29 +18,31 @@
  */
 defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
- * Starting point for the plugin
- * 
- * Everything about the plugin starts here.
- * 
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * 
  */
-class Plugin extends \WPP\Carousel\Base\Plugin {
-	
+class Carousel_Slide extends \WPP\Carousel\Base\Content_Type {
+	const POST_TYPE           = 'wpp-carousel-slide';
+	const NAME_SINGLE         = 'Carousel Slide';
+	const NAME_PLURAL         = 'Carousel Slides';
+	const TEXT_DOMAIN         = WPP_CAROUSEL_TEXT_DOMAIN;
+	const IS_PUBLIC           = FALSE;
+	const EXCLUDE_FROM_SEARCH = TRUE;
+	const PUBLICLY_QUERYABLE  = FALSE;
+	const SHOW_UI             = FALSE;
+	const SHOW_IN_NAV_MENUS   = FALSE;
+	const SHOW_IN_MENU        = FALSE;
+	const SHOW_IN_ADMIN_BAR   = FALSE;
+	const SUPPORTS            = 'title,excerpt';
+
 	/**
 	 * Initialization point for the static class
 	 * 
+	 * @param string|array $options An optional array containing the meta box options
+	 *
 	 * @return void No return value
 	 */
 	public static function init() {
-		parent::init( array(
-			'admin_controllers' => array( 
-				"\WPP\Carousel\Admin", 
-			),
-			'content_types' => array( 
-				"\WPP\Carousel\Content_Types\Carousel",
-				"\WPP\Carousel\Content_Types\Carousel_Slide",
-			),
-		) );
+		parent::init();
 	}
+
 }

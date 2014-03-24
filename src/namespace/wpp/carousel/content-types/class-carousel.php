@@ -33,6 +33,7 @@ class Carousel extends \WPP\Carousel\Base\Content_Type {
 	const SHOW_IN_MENU        = TRUE;
 	const SHOW_IN_ADMIN_BAR   = TRUE;
 	const SUPPORTS            = 'title';
+	const DISABLE_QUICK_EDIT  = TRUE;
 
 	/**
 	 * Initialization point for the static class
@@ -41,12 +42,17 @@ class Carousel extends \WPP\Carousel\Base\Content_Type {
 	 *
 	 * @return void No return value
 	 */
-	public static function init( $options = array() ) {
+	public static function init() {
 		parent::init( 
 			array(
-				'meta_boxes' => array( "\WPP\Carousel\Meta_Boxes\Slide" ),
-			), 
-			$options 
+				'args' => array(
+					'rewrite' => FALSE,
+				),
+				'meta_boxes' => array( 
+					"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box",
+					"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box",
+				),
+			)
 		);
 	}
 

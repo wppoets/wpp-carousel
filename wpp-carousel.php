@@ -33,13 +33,15 @@
  */
 defined( 'ABSPATH' ) or die(); // We should not be loading this outside of wordpress
 
-defined( 'WPP_CAROUSEL_VERSION_NUM' )    or define( 'WPP_CAROUSEL_VERSION_NUM', '0.9.0' );
-defined( 'WPP_CAROUSEL_TEXT_DOMAIN' )    or define( 'WPP_CAROUSEL_TEXT_DOMAIN', 'wpp-carousel' );
-defined( 'WPP_CAROUSEL_PLUGIN_FILE' )    or define( 'WPP_CAROUSEL_PLUGIN_FILE', __FILE__ );
-defined( 'WPP_CAROUSEL_PLUGIN_PATH' )    or define( 'WPP_CAROUSEL_PLUGIN_PATH', dirname(__FILE__ ) );
-defined( 'WPP_CAROUSEL_NAMESPACE_PATH' ) or define( 'WPP_CAROUSEL_NAMESPACE_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/namespace' );
-defined( 'WPP_CAROUSEL_FUNCTION_PATH' )  or define( 'WPP_CAROUSEL_FUNCTION_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/functions' );
-defined( 'WPP_CAROUSEL_FILTER_FILE' )    or define( 'WPP_CAROUSEL_FILTER_FILE', 'wpp-carousel/wpp-carousel.php' );
+defined( 'WPP_CAROUSEL_VERSION_NUM' )       or define( 'WPP_CAROUSEL_VERSION_NUM', '0.9.0' );
+//defined( 'WPP_CAROUSEL_ASSETS_VERSION_NUM') or define( 'WPP_CAROUSEL_ASSETS_VERSION_NUM', WPP_CAROUSEL_VERSION_NUM ); 
+defined( 'WPP_CAROUSEL_ASSETS_VERSION_NUM') or define( 'WPP_CAROUSEL_ASSETS_VERSION_NUM', date('YmdHis') ); // Devolopment Only
+defined( 'WPP_CAROUSEL_TEXT_DOMAIN' )       or define( 'WPP_CAROUSEL_TEXT_DOMAIN', 'wpp-carousel' );
+defined( 'WPP_CAROUSEL_PLUGIN_FILE' )       or define( 'WPP_CAROUSEL_PLUGIN_FILE', __FILE__ );
+defined( 'WPP_CAROUSEL_PLUGIN_PATH' )       or define( 'WPP_CAROUSEL_PLUGIN_PATH', dirname(__FILE__ ) );
+defined( 'WPP_CAROUSEL_NAMESPACE_PATH' )    or define( 'WPP_CAROUSEL_NAMESPACE_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/namespace' );
+defined( 'WPP_CAROUSEL_FUNCTION_PATH' )     or define( 'WPP_CAROUSEL_FUNCTION_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/functions' );
+defined( 'WPP_CAROUSEL_FILTER_FILE' )       or define( 'WPP_CAROUSEL_FILTER_FILE', 'wpp-carousel/wpp-carousel.php' );
 
 //Include the required function files
 require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'common.php' );

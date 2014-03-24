@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel\Base;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <opensource@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify

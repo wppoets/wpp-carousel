@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel\Base;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <opensource@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,22 @@
 abstract class Meta_Box {
 	const ID                 = 'wpp-meta-box';
 	const TITLE              = 'WPP Meta Box';
+	const PLUGIN_FILE        = __FILE__;
+	const ASSET_VER          = FALSE;
 	const TEXT_DOMAIN        = '';
 	const NONCE_ACTION       = __FILE__;
 	const INCLUDE_POST_TYPES = '';
 	const EXCLUDE_POST_TYPES = '';
 	const ALL_POST_TYPES     = FALSE;
+	const CONTEXT            = 'advanced'; //('normal', 'advanced', or 'side')
+	const PRIORITY           = 'default'; //('high', 'core', 'default' or 'low')
+	const CALLBACK_ARGS      = '';
+	const ENABLE_AJAX        = FALSE;
+	const AJAX_ACTION        = 'wp_ajax_wpp-meta-box'; //Must start with 'wp_ajax_' to work
+	const FORM_PREFIX        = 'wpp_meta_box_'; // Must be javascript varible name compatable ie no dashes
+	const ENQUEUE_MEDIA      = FALSE;
+	const ENQUEUE_SCRIPT     = FALSE;
+	const ENQUEUE_STYLE      = FALSE;
 
 	private static $_initialized = false;
 	private static $_options = array();
@@ -44,6 +55,7 @@ abstract class Meta_Box {
 		if ( ! empty( self::$_initialized[ $static_instance ] ) ) { return; }
 		add_action( 'add_meta_boxes', array( $static_instance, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $static_instance, 'save_post' ) );
+		if( static::ENABLE_AJAX ) add_action( static::AJAX_ACTION, array( $static_instance, 'wp_ajax' ) );
 		self::$_initialized[ $static_instance ] = true;
 	}
 	
@@ -62,6 +74,10 @@ abstract class Meta_Box {
 				'include_post_types' => explode( ',', static::INCLUDE_POST_TYPES ),
 				'exclude_post_types' => explode( ',', static::EXCLUDE_POST_TYPES ),
 				'all_post_types' => static::ALL_POST_TYPES,
+				'context' => static::CONTEXT,
+				'priority' => static::PRIORITY,
+				'callback_args' => explode( ',', static::CALLBACK_ARGS ),
+				'enqueue_meida' => static::ENQUEUE_MEDIA,
 			),
 			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
@@ -103,17 +119,66 @@ abstract class Meta_Box {
 				static::ID,
 				__( static::TITLE, static::TEXT_DOMAIN ),
 				array( $static_instance, 'meta_box_display' ),
-				$post_type
+				$post_type,
+				$options['context'],
+				$options['priority'],
+				$options['callback_args']
 			);
+			add_action( 'add_meta_boxes_' . $post_type, array( $static_instance, 'add_meta_boxes_content_type' ) );
 		}
+	}
+
+	/*
+	 *  
+	 *  @return void No return value
+	 */
+	public static function add_meta_boxes_content_type() {
+		$static_instance = get_called_class();
+		if ( self::$_options[ $static_instance ][ 'enqueue_meida' ] ) { wp_enqueue_media(); }
+		add_action( 'admin_enqueue_scripts', array( $static_instance, 'admin_enqueue_scripts' ) );
 	}
 	
 	/*
 	 *  
 	 *  @return void No return value
 	 */
+	public static function admin_enqueue_scripts() {
+		if ( static::ENQUEUE_STYLE ) {
+			wp_register_style( 
+				static::ID . '-style', 
+				plugins_url( '/styles/' . static::ID . '.css', static::PLUGIN_FILE ), 
+				array(), 
+				static::ASSET_VER,
+				'all'
+			);
+			wp_enqueue_style( static::ID . '-style' );
+		}
+		if ( static::ENQUEUE_SCRIPT ) {
+			wp_register_script( 
+				static::ID . '-script', 
+				plugins_url( '/scripts/' . static::ID . '.js', static::PLUGIN_FILE ), 
+				array( 'jquery' ), //We are just going to assume we will always need jquery! :P
+				static::ASSET_VER
+			);
+			wp_enqueue_script( static::ID . '-script' );
+		}
+	}
+
+	/*
+	 *  
+	 *  @return void No return value
+	 */
+	public static function wp_ajax( $return_value = array( 'status' => 'success' ) ) {
+		print( json_encode( $return_value ) );
+		die();
+	}
+
+	/*
+	 *  
+	 *  @return void No return value
+	 */
 	public static function meta_box_display() {
-		wp_nonce_field( static::NONCE_ACTION, static::ID . '-wpnonce' );
+		wp_nonce_field( static::NONCE_ACTION, static::FORM_PREFIX . '_wpnonce' );
 	}
 	
 	/*
@@ -124,6 +189,7 @@ abstract class Meta_Box {
 		if ( ! current_user_can( 'edit_page', $post_id ) ) { return; } //Check users permissions
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )  { return; } //Check skip if we are only auto saving
 		if ( wp_is_post_revision( $post_id ) ) { return; } //Check to make sure it is not a revision
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::ID . '-wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) { return; } //Verify the form
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::FORM_PREFIX . '_wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) { return; } //Verify the form
 	}
+
 }

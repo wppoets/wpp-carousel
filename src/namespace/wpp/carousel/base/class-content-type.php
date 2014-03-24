@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel\Base;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <opensource@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,9 @@ abstract class Content_Type {
 	const HAS_ARCHIVE         = FALSE;
 	const PERMALINK_EPMASK    = EP_PERMALINK;
 	const QUERY_VAR           = self::POST_TYPE;
-	const CAN_EXPORT          = true;
+	const CAN_EXPORT          = TRUE;
 	const SHOW_DASHBOARD      = FALSE;
+	const DISABLE_QUICK_EDIT  = FALSE;
 
 	protected static $_initialized = array();
 	protected static $_options = array();
@@ -64,7 +65,38 @@ abstract class Content_Type {
 		add_action( 'init', array( $static_instance, 'wp_init' ) );
 		if ( static::SHOW_DASHBOARD ) add_action( 'dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
 		if ( is_admin() ) static::meta_boxes_init();
+		if ( static::DISABLE_QUICK_EDIT ) {
+			if ( 'post' === static::CAPABILITY_TYPE ) {
+				add_action( 'post_row_actions', array( $static_instance, 'disable_quick_edit_post_row_actions' ), 10, 2 );
+			} elseif( 'page' === static::CAPABILITY_TYPE ) {
+				add_action( 'page_row_actions', array( $static_instance, 'disable_quick_edit_post_row_actions' ), 10, 2 );
+			}
+		}
 		self::$_initialized[ $static_instance ] = true;
+	}
+
+	/*
+	 *
+	 */
+	public static function is_initialized() {
+		$static_instance = get_called_class();
+		return ( empty( self::$_initialized[ $static_instance ] ) ? FALSE : TRUE );
+	}
+
+	/*
+	 * Function for removing the quick edit option from the page listing
+	 *
+	 * ref: https://core.trac.wordpress.org/ticket/19343 
+	 * If the ever fix it ( I agree its a hack and should be supported in the register post type to disable)
+	 *
+	 * @param array $actions Array of actions??
+	 * @param object $post Post object
+	 * @return array Updated actions array
+	 */
+	public static function disable_quick_edit_post_row_actions( $actions, $post ) {
+		if ( static::POST_TYPE == $post->post_type )
+			unset( $actions['inline hide-if-no-js'] );
+		return $actions;
 	}
 
 	/**
