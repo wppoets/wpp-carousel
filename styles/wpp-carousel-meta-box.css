@@ -1,0 +1,8 @@
+/* Hide the WordPress items we will not be using */
+#edit-slug-box, #visibility, #preview-action, #message.updated > p > a {
+	display:none;
+}
+/* Hack to hide the content alias metabox.... TODO: finish the plugin! */
+#wppca_metabox{
+	display:none;
+}
