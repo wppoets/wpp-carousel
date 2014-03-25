@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel\Base;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <opensource@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,37 +18,93 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
+ * @version 1.0.0
  */
 abstract class Content_Type {
-	const POST_TYPE           = 'wpp-content-type';
-	const NAME_SINGLE         = 'Content';
-	const NAME_PLURAL         = 'Contents';
-	const TEXT_DOMAIN         = '';
-	const DESCRIPTION         = '';
-	const IS_PUBLIC           = FALSE;
-	const EXCLUDE_FROM_SEARCH = TRUE;
-	const PUBLICLY_QUERYABLE  = self::IS_PUBLIC;
-	const SHOW_UI             = self::IS_PUBLIC;
-	const SHOW_IN_NAV_MENUS   = self::IS_PUBLIC;
-	const SHOW_IN_MENU        = self::SHOW_UI;
-	const SHOW_IN_ADMIN_BAR   = self::SHOW_IN_MENU;
-	const MENU_POSITION       = NULL;
-	const MENU_ICON           = NULL;
-	const CAPABILITY_TYPE     = 'post';
-	const MAP_META_CAP        = TRUE;
-	const HIERARCHICAL        = FALSE;
-	const SUPPORTS            = 'title,editor';
-	const TAXONOMIES          = '';
-	const HAS_ARCHIVE         = FALSE;
-	const PERMALINK_EPMASK    = EP_PERMALINK;
-	const QUERY_VAR           = self::POST_TYPE;
-	const CAN_EXPORT          = TRUE;
-	const SHOW_DASHBOARD      = FALSE;
-	const DISABLE_QUICK_EDIT  = FALSE;
-	const CASCADE_DELETE      = FALSE;
 
-	protected static $_initialized = array();
-	protected static $_options = array();
+	/** Used to store the post-type id*/
+	const POST_TYPE = 'wpp-content-type';
+
+	/** Used to store the singular form of the name */
+	const NAME_SINGLE = 'Content';
+
+	/** Used to store the plural form of the name */
+	const NAME_PLURAL = 'Contents';
+
+	/** Used to store the text domain */
+	const TEXT_DOMAIN = '';
+
+	/** Used by register_post_type args */
+	const DESCRIPTION = '';
+
+	/** Used by register_post_type args */
+	const IS_PUBLIC = FALSE;
+
+	/** Used by register_post_type args */
+	const EXCLUDE_FROM_SEARCH = TRUE;
+
+	/** Used by register_post_type args */
+	const PUBLICLY_QUERYABLE = self::IS_PUBLIC;
+
+	/** Used by register_post_type args */
+	const SHOW_UI = self::IS_PUBLIC;
+
+	/** Used by register_post_type args */
+	const SHOW_IN_NAV_MENUS = self::IS_PUBLIC;
+
+	/** Used by register_post_type args */
+	const SHOW_IN_MENU = self::SHOW_UI;
+
+	/** Used by register_post_type args */
+	const SHOW_IN_ADMIN_BAR = self::SHOW_IN_MENU;
+
+	/** Used by register_post_type args */
+	const MENU_POSITION = NULL;
+
+	/** Used by register_post_type args */
+	const MENU_ICON = NULL;
+
+	/** Used by register_post_type args */
+	const CAPABILITY_TYPE = 'post';
+
+	/** Used by register_post_type args */
+	const MAP_META_CAP = TRUE;
+
+	/** Used by register_post_type args */
+	const HIERARCHICAL = FALSE;
+
+	/** Used by register_post_type args, comma delimited */
+	const SUPPORTS = 'title,editor';
+
+	/** Used by register_post_type args, comma delimited */
+	const TAXONOMIES = '';
+
+	/** Used by register_post_type args */
+	const HAS_ARCHIVE = FALSE;
+
+	/** Used by register_post_type args */
+	const PERMALINK_EPMASK = EP_PERMALINK;
+
+	/** Used by register_post_type args */
+	const QUERY_VAR = self::POST_TYPE;
+
+	/** Used by register_post_type args */
+	const CAN_EXPORT = TRUE;
+
+	/** Used by register_post_type args */
+	const SHOW_DASHBOARD = FALSE;
+
+	/** Used to disable the quick edit box */
+	const DISABLE_QUICK_EDIT = FALSE;
+
+	/** Used to enable cascade delete */
+	const ENABLE_CASCADE_DELETE = FALSE;
+
+	/** Used to store the initialization of the class */
+	static private $_initialized = array();
+
+	/** Used to store the options */
+	static private $_options = array();
 
 	/**
 	 * Initialization point for the static class
@@ -57,78 +113,71 @@ abstract class Content_Type {
 	 *
 	 * @return void No return value
 	 */
-	public static function init( $options = array() ) {
+	static public function init( $options = array() ) {
 		$static_instance = get_called_class();
-		//wpp_debug( __METHOD__ . ': $static_instance = ' . $static_instance);
-		if ( ! empty( self::$_initialized[ $static_instance ] ) ) return;
-		self::$_options[ $static_instance ] = array(); //setup the static instance of the class
+		if ( ! empty( self::$_initialized[ $static_instance ] ) ) {
+			return;
+		}
 		static::set_options( $options );
-		add_action( 'init', array( $static_instance, 'wp_init' ) );
-		if ( static::SHOW_DASHBOARD ) add_action( 'dashboard_glance_items', array( $static_instance, 'dashboard_glance_items' ) );
-		if ( is_admin() ) static::meta_boxes_init();
+		add_action( 'init', array( $static_instance, 'action_init' ) );
+		if ( static::SHOW_DASHBOARD ) {
+			add_action( 'dashboard_glance_items', array( $static_instance, 'action_dashboard_glance_items' ) );
+		}
 		if ( static::DISABLE_QUICK_EDIT ) {
 			if ( 'post' === static::CAPABILITY_TYPE ) {
-				add_action( 'post_row_actions', array( $static_instance, 'disable_quick_edit_post_row_actions' ), 10, 2 );
+				add_action( 'post_row_actions', array( $static_instance, 'action_post_row_actions_disable_quick_edit' ), 10, 2 );
 			} elseif( 'page' === static::CAPABILITY_TYPE ) {
-				add_action( 'page_row_actions', array( $static_instance, 'disable_quick_edit_post_row_actions' ), 10, 2 );
+				add_action( 'page_row_actions', array( $static_instance, 'action_post_row_actions_disable_quick_edit' ), 10, 2 );
 			}
 		}
-		if ( static::CASCADE_DELETE ) add_action( 'delete_post', array( $static_instance, 'delete_post_cascade' ) );
+		if ( static::ENABLE_CASCADE_DELETE ) {
+			add_action( 'delete_post', array( $static_instance, 'action_delete_post_cascade' ) );
+		}
+		if ( is_admin() ) {
+			static::init_meta_boxes();
+		}
 		self::$_initialized[ $static_instance ] = true;
 	}
-
-	/*
-	 *
+	
+	/**
+	 * Init method for the meta boxes
+	 * 
+	 * @return void No return value
 	 */
-	public static function is_initialized() {
+	static public function init_meta_boxes() {
+		$static_instance = get_called_class();
+		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $class ) {
+			if ( class_exists( $class ) && method_exists( $class, 'init' ) ) {
+				$class::init( array(
+					'include_post_types' => array( static::POST_TYPE ),
+				) );
+			}
+		}
+	}
+
+	/**
+	 * Method to find the current initialized value of the instance
+	 * 
+	 * @return boolean Returns the initialized value of the instance
+	 */
+	static public function is_initialized() {
 		$static_instance = get_called_class();
 		return ( empty( self::$_initialized[ $static_instance ] ) ? FALSE : TRUE );
 	}
 
-	/*
-	 *
-	 */
-	public static function delete_post_cascade( $post_id ) {
-		if ( static::POST_TYPE !== get_post_type( $post_id ) ) return;
-		$cascade_posts = new \WP_Query( array(
-			'post_type'      => get_post_types( array(), 'names' ), // Need to use get_post_types because 'any' doesnt work as expected
-			'post_parent'    => $post_id,
-			'post_status'    => 'any',
-			'nopaging'       => TRUE,
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-		) );
-		$cascade_post_ids = ( empty( $cascade_posts->posts ) ? array() : $cascade_posts->posts );
-		foreach ( (array) $cascade_post_ids as $cascade_post_id ) {
-			wp_delete_post( $cascade_post_id, TRUE );
-		}
-	}
-
-	/*
-	 * Function for removing the quick edit option from the page listing
-	 *
-	 * ref: https://core.trac.wordpress.org/ticket/19343 
-	 * If the ever fix it ( I agree its a hack and should be supported in the register post type to disable)
-	 *
-	 * @param array $actions Array of actions??
-	 * @param object $post Post object
-	 * @return array Updated actions array
-	 */
-	public static function disable_quick_edit_post_row_actions( $actions, $post ) {
-		if ( static::POST_TYPE == $post->post_type )
-			unset( $actions['inline hide-if-no-js'] );
-		return $actions;
-	}
-
 	/**
-	 * set function for the options
+	 * Set method for the options
 	 *  
 	 * @param string|array $options An array containing the meta box options
+	 * @param boolean $merge Should the current options be merged in?
 	 * 
 	 * @return void No return value
 	 */
-	public static function set_options( $options, $overwrite = FALSE ) {
+	static public function set_options( $options, $merge = FALSE ) {
 		$static_instance = get_called_class();
+		if ( empty( self::$_options[ $static_instance ] ) ) {
+			self::$_options[ $static_instance ] = array(); //setup an empty instance if empty
+		}
 		self::$_options[ $static_instance ] = wpp_array_merge_nested(
 			array ( 
 				'args' => array(
@@ -171,53 +220,86 @@ abstract class Content_Type {
 				),
 				'meta_boxes' => array(),
 			),
-			( $overwrite ) ? array() : self::$_options[ $static_instance ], //if ! $overwrite add the current options to the merge
+			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
 		);
 	}
 
-	/*
-	 * get function for the option array
+	/**
+	 * Get method for the option array
 	 *  
 	 * @return array Returns the option array
 	 */
-	public static function get_options() {
+	static public function get_options() {
 		$static_instance = get_called_class();
 		return self::$_options[ $static_instance ];
 	}
 
-	/*
+	/**
+	 * WordPress action method for processing cascade delete of a post
+	 * 
+	 * @param int $post_id Returns the post id of the post being deleted
 	 *
+	 * @return string Returns the results of the shortcode
 	 */
-	public static function wp_init() {
+	static public function action_delete_post_cascade( $post_id ) {
+		if ( ! static::ENABLE_CASCADE_DELETE || static::POST_TYPE !== get_post_type( $post_id ) ) {
+			return;
+		}
+		$cascade_posts = new \WP_Query( array(
+			'post_type'      => get_post_types( array(), 'names' ), // Need to use get_post_types because 'any' doesnt work as expected
+			'post_parent'    => $post_id,
+			'post_status'    => 'any',
+			'nopaging'       => TRUE,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		) );
+		$cascade_post_ids = ( empty( $cascade_posts->posts ) ? array() : $cascade_posts->posts );
+		foreach ( (array) $cascade_post_ids as $cascade_post_id ) {
+			wp_delete_post( $cascade_post_id, TRUE );
+		}
+	}
+
+	/*
+	 * WordPress action method for removing the quick edit option from the page listing
+	 *
+	 * ref: https://core.trac.wordpress.org/ticket/19343 
+	 * If the ever fix it ( I agree its a hack and should be supported in the register post type to disable)
+	 *
+	 * @param array $actions Array of actions??
+	 * @param object $post Post object
+	 * @return array Updated actions array
+	 */
+	static public function action_post_row_actions_disable_quick_edit( $actions, $post ) {
+		if ( static::POST_TYPE == $post->post_type ) {
+			unset( $actions['inline hide-if-no-js'] );
+		}
+		return $actions;
+	}
+
+	/**
+	 * WordPress action method for the primary wordpress init
+	 *  
+	 * @return void No return value
+	 */
+	static public function action_init() {
 		$static_instance = get_called_class();
 		register_post_type( static::POST_TYPE, self::$_options[ $static_instance ][ 'args' ] );
 	}
 	
-	/*
-	 *
+	/**
+	 * WordPress action method for the dashboard glance items
+	 *  
+	 * @return void No return value
 	 */
-	public static function dashboard_glance_items() {
+	static public function action_dashboard_glance_items() {
 		$static_instance = get_called_class();
 		$labels = &self::$_options[ $static_instance ]['args']['labels'];
 		$post_type_info = get_post_type_object( static::POST_TYPE );
 		$num_posts = wp_count_posts( static::POST_TYPE );
 		$num = number_format_i18n( $num_posts->publish );
 		$text = _n( $labels['singular_name'], $labels['name'], intval( $num_posts->publish ) );
-		echo '<li class="page-count ' . $post_type_info->name. '-count"><a href="edit.php?post_type=' . static::POST_TYPE . '">' . $num . ' ' . $text . '</a></li>';
+		print( '<li class="page-count ' . $post_type_info->name. '-count"><a href="edit.php?post_type=' . static::POST_TYPE . '">' . $num . ' ' . $text . '</a></li>' );
 	}
-	
-	/*
-	 *  
-	 */
-	public static function meta_boxes_init() {
-		$static_instance = get_called_class();
-		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $meta_box_class ) {
-			$meta_box_class::init(
-				array(
-					'include_post_types' => array( static::POST_TYPE ),
-				)
-			);
-		}
-	}
+
 }

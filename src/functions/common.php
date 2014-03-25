@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <opensource@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  * 
  * @param string $message The message to send to the error log
  * @return void No return value
+ * @version 1.0.0
  */
 if ( ! function_exists( 'wpp_debug' ) ) {
 	function wpp_debug( $message, $options = array() ) {
@@ -46,6 +47,7 @@ if ( ! function_exists( 'wpp_debug' ) ) {
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * @param array $... Will loop through all arrays passed in
  * @return array The merged results
+ * @version 1.0.10
  */
 if ( ! function_exists( 'wpp_array_merge_nested' ) ) {
 	function wpp_array_merge_nested() {

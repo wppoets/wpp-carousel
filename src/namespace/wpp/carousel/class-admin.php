@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class Admin extends \WPP\Carousel\Base\Admin {
 	 * 
 	 * @return void No return value
 	 */
-	public static function init() {
+	static public function init() {
 		parent::init();
 	}
 	

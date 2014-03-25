@@ -10,7 +10,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * Portions of this distribution are copyrighted by:
  *   Copyright (c) 2014 Michael Stutz <michaeljstutz@gmail.com>
  * All rights reserved.

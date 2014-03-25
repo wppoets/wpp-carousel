@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@ defined( 'WPP_CAROUSEL_NAMESPACE_PATH' ) or die(); //Required down the road as w
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * @param string $class The class that needs to be autoloaded
  * @return void No return value
+ * @version 1.0.1
  */
 if ( ! function_exists( 'wpp_carousel_spl_autoload' ) ) {
 	function wpp_carousel_spl_autoload( $class ) {
@@ -42,6 +43,9 @@ if ( ! function_exists( 'wpp_carousel_spl_autoload' ) ) {
 			// Include the file, we use include instead of require because it is faster and if the class is already loaded 
 			// we should never have needed to autoload it
 			include( $class_path ); 
+			if ( ! class_exists( $class, false ) ) { // If the class still does not exists then trigger error
+				trigger_error( "Unable to load class: $class", E_USER_WARNING );
+			}
 		}
 		unset( $folders, $class_name, $class_path ); // Clean up
 	}

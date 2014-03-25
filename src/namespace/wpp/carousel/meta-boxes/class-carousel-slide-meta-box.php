@@ -1,6 +1,6 @@
 <?php namespace WPP\Carousel\Meta_Boxes;
 /**
- * Copyright (c) 2014, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,26 +21,74 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
  class Carousel_Slide_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
-	const ID              = 'wpp-carousel-slide-meta-box';
-	const TITLE           = 'Carousel Slides';
-	const PLUGIN_FILE     = WPP_CAROUSEL_PLUGIN_FILE;
-	const NONCE_ACTION    = __FILE__;
-	const ASSET_VER       = WPP_CAROUSEL_ASSETS_VERSION_NUM;
-	const TEXT_DOMAIN     = WPP_CAROUSEL_TEXT_DOMAIN;
-	const CONTEXT         = 'normal'; //('normal', 'advanced', or 'side')
-	const PRIORITY        = 'default'; //('high', 'core', 'default' or 'low')
-	const FORM_PREFIX     = 'wpp_carousel_slide_fields'; // Must be javascript varible name compatable ie no dashes
-	const METADATA_KEY    = '_wpp_carousel_slide';
-	const ENQUEUE_MEDIA   = TRUE;
-	const ENQUEUE_SCRIPT  = TRUE;
-	const ENQUEUE_STYLE   = TRUE;
 
-	/*
-	 *  
-	 *  @return void No return value
+	/** Used to set the meta-box ID */
+	const ID = 'wpp-carousel-slide-meta-box';
+
+	/** Used to store the meta-box title */
+	const TITLE = 'Carousel Slides';
+
+	/** Used to store the plugin file location */
+	const PLUGIN_FILE = WPP_CAROUSEL_PLUGIN_FILE;
+
+	/** Used to store the asset version */
+	const ASSET_VER = WPP_CAROUSEL_ASSETS_VERSION_NUM;
+
+	/** Used to store the text domain */
+	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+
+	/** Used to store the nonce action */
+	const NONCE_ACTION = __FILE__;
+
+	///** Used to store which post types to include, comma seperated list */
+	//const INCLUDE_POST_TYPES = '';
+
+	///** Used to store which post types to exclude, comma seperated list */
+	//const EXCLUDE_POST_TYPES = '';
+
+	///** Used to enable including all post types */
+	//const ENABLE_ALL_POST_TYPES = FALSE;
+
+	/** Used to store waht context the meta-box should be located */
+	const CONTEXT = 'normal'; //('normal', 'advanced', or 'side')
+
+	/** Used to store what priority the meta-box should have */
+	const PRIORITY = 'default'; //('high', 'core', 'default' or 'low')
+
+	///** Used to store which callback_args should be sent to the creation of the meta-box */
+	//const CALLBACK_ARGS = '';
+
+	///** Used to store the ajax action tag */
+	//const AJAX_SUFFIX = ''; // If left empty will use ID
+
+	/** Used to store the form prefex */
+	const FORM_PREFIX = 'wpp_carousel_slide_fields'; // should only use [a-z0-9_]
+
+	/** Used as the metadata key prefix */
+	const METADATA_KEY_PREFIX = '_wpp_carousel_slide';
+
+	///** Used to enable ajax callbacks */
+	//const ENABLE_AJAX = FALSE;
+
+	/** Used to enable enqueue_media function */
+	const ENABLE_ENQUEUE_MEDIA = TRUE;
+
+	/** Used to enable the default scripts */
+	const ENABLE_DEFAULT_SCRIPT = TRUE;
+
+	/** Used to enable the default styles */
+	const ENABLE_DEFAULT_STYLE = TRUE;
+
+	/**
+	 * WordPress action for displaying the meta-box
+	 *
+	 * @param object $post The post object the metabox is working with
+	 * @param array $callback_args Extra call back args
+	 *
+	 * @return void No return value
 	 */
-	public static function meta_box_display( $post, $callback_args ) {
-		parent::meta_box_display();
+	static public function action_meta_box_display( $post, $callback_args ) {
+		parent::action_meta_box_display( $post, $callback_args );
 		$empty_message = __( 'Nothing to display, you have no slides.', static::TEXT_DOMAIN );
 		$carousel_slides = array();
 		if ( \WPP\Carousel\Content_Types\Carousel_Slide::is_initialized() ) {
@@ -110,54 +158,54 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 		<?php
 	}
 
-	/*
-	 *  
-	 *  @return void No return value
+	/**
+	 * WordPress action for saving the post
+	 * 
+	 * @return void No return value
 	 */
-	public static function save_post( $post_id ) {
-		parent::save_post( $post_id );
+	static public function action_save_post( $post_id ) {
+		parent::action_save_post( $post_id );
 		if ( \WPP\Carousel\Content_Types\Carousel_Slide::is_initialized() ) {
 			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide::POST_TYPE;
 			$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
 			$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
-			if ( ! empty( $form_data['sort_order'] ) ) {
-				$static_instance = get_called_class();
-				remove_action( 'save_post', array( $static_instance, 'save_post' ) );
-				foreach ( (array) $form_data['sort_order'] as $row_id ) {
-					if ( ! empty( $form_data[ 'rows' ][ $row_id ] ) ) {
-						$active_row = &$form_data[ 'rows' ][ $row_id ];
-						if ( 'false' === $active_row[ 'removed' ] ) { // removed is set to 'false'
-							//Add post
-							$insert_post_return = wp_insert_post(
-								array(
-									'ID'             => ('false' === $active_row[ 'post_id' ] ? NULL : $active_row[ 'post_id' ] ),
-									'post_content'   => json_encode( $active_row ),
-									'post_name'      => '',
-									'post_title'     => wp_strip_all_tags( ( empty( $active_row[ 'title' ] ) ? '' : $active_row[ 'title' ] ) ),
-									'post_status'    => 'publish',
-									'post_type'      => $post_type,
-									'post_parent'    => $post_id,
-									'menu_order'     => $post_order++,
-									'post_excerpt'   => ( empty( $active_row[ 'caption' ] ) ? '' : $active_row[ 'caption' ] ),
-									'comment_status' => 'closed',
-								),
-								TRUE
-							);
-							if ( ! is_wp_error( $insert_post_return ) ) {
-								if ( ! empty( $active_row[ 'image_id' ] ) && 'false' !== $active_row[ 'image_id' ] ) {
-									add_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ]);
-								}
-							}
-							unset( $insert_post_return );
-						} elseif ( 'true' === $active_row[ 'removed' ] && 'false' !== $active_row[ 'post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
-							wp_delete_post( $active_row[ 'post_id' ], TRUE );
-						}
-					}
-				}
-				add_action( 'save_post', array( $static_instance, 'save_post' ) );
-				unset( $static_instance );
+			if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going
+				return;
 			}
-			unset( $post_type, $post_order, $form_data );
+			$static_instance = get_called_class();
+			remove_action( 'save_post', array( $static_instance, 'action_save_post' ) );
+			foreach ( (array) $form_data['sort_order'] as $row_id ) {
+				if ( empty( $form_data[ 'rows' ][ $row_id ] ) ) { // If the row is empty no need to keep going
+					continue;
+				}
+				$active_row = &$form_data[ 'rows' ][ $row_id ];
+				if ( 'false' === $active_row[ 'removed' ] ) { // removed is set to 'false'
+					//Add post
+					$insert_post_return = wp_insert_post(
+						array(
+							'ID'             => ('false' === $active_row[ 'post_id' ] ? NULL : $active_row[ 'post_id' ] ),
+							'post_content'   => json_encode( $active_row ),
+							'post_name'      => '',
+							'post_title'     => wp_strip_all_tags( ( empty( $active_row[ 'title' ] ) ? '' : $active_row[ 'title' ] ) ),
+							'post_status'    => 'publish',
+							'post_type'      => $post_type,
+							'post_parent'    => $post_id,
+							'menu_order'     => $post_order++,
+							'post_excerpt'   => ( empty( $active_row[ 'caption' ] ) ? '' : $active_row[ 'caption' ] ),
+							'comment_status' => 'closed',
+						),
+						TRUE
+					);
+					if ( ! is_wp_error( $insert_post_return ) && ! empty( $active_row[ 'image_id' ] ) && 'false' !== $active_row[ 'image_id' ] ) {
+						add_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ]);
+					}
+					unset( $insert_post_return );
+				} elseif ( 'true' === $active_row[ 'removed' ] && 'false' !== $active_row[ 'post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
+					wp_delete_post( $active_row[ 'post_id' ], TRUE );
+				}
+			}
+			add_action( 'save_post', array( $static_instance, 'action_save_post' ) );
+			unset( $post_type, $post_order, $form_data, $static_instance );
 		} else {
 			trigger_error( __( 'Required content type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
 		}
