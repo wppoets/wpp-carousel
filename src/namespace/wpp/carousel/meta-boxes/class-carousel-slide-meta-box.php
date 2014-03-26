@@ -87,7 +87,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	static public function init( $options = array() ) {
 		parent::init( wpp_array_merge_nested(
 			array(
-				'post_type'   => '',
+				'data_content_type'   => '',
 				'slide_types' => array(),
 			),
 			$options
@@ -106,23 +106,12 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 		parent::action_meta_box_display( $post, $callback_args );
 		$empty_message = __( 'Nothing to display, you have no slides.', static::TEXT_DOMAIN );
 		$options = parent::get_options();
+		$data_content_type = $options['data_content_type'];
 		$carousel_slides = array();
-		if ( ! empty( $options['post_type'] ) ) {
-			$carousel_slide_query = new \WP_Query( array( 
-				'post_type'      => $options['post_type'],
-				'post_status'    => 'publish',
-				'post_parent'    => $post->ID,
-				'order'          => 'ASC',
-				'order_by'       => 'menu_order',
-				'nopaging'       => TRUE,
-				'posts_per_page' => -1,
+		if ( ! empty( $data_content_type ) && class_exists( $data_content_type ) && method_exists( $data_content_type, 'get_posts' ) ) {
+			$carousel_slides = $data_content_type::get_posts( array(
+				'post_parent' => $post->ID,
 			) );
-			$carousel_slides = ( empty( $carousel_slide_query->posts ) ? array() : $carousel_slide_query->posts );
-			wp_reset_postdata();
-		} else {
-			print('<style>#wpp-carousel-slide-table .wpp-carousel-slide-buttons > button{display:none;}</style>');
-			$empty_message = __( 'Error, required post_type not passed.', static::TEXT_DOMAIN );
-			trigger_error( __( 'Required post_type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
 		}
 		?>
 		<table id="wpp-carousel-slide-table">
@@ -139,7 +128,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			<?php 
 		foreach ( $carousel_slides as $slide ) {
 			$starting_data_row = '';
-			$fields = json_decode( $slide->post_content, TRUE );
+			$fields = $slide->post_content_decode;
 			if ( ! empty( $fields['type'] ) && 'static' === $fields['type'] ) {
 				$slide->post_featured_id = get_post_thumbnail_id( $slide->ID );
 				$starting_data_row .= "\n\t\t\t\t{";
@@ -181,49 +170,33 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	static public function action_save_post( $post_id ) {
 		parent::action_save_post( $post_id );
 		$options = parent::get_options();
-		if ( ! empty( $options['post_type'] ) ) {
-			$post_type = $options['post_type'];
-			$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
-			$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
-			if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going
-				return;
-			}
-			$static_instance = get_called_class();
-			remove_action( 'save_post', array( $static_instance, 'action_save_post' ) );
-			foreach ( (array) $form_data['sort_order'] as $row_id ) {
-				if ( empty( $form_data[ 'rows' ][ $row_id ] ) ) { // If the row is empty no need to keep going
-					continue;
-				}
-				$active_row = &$form_data[ 'rows' ][ $row_id ];
-				if ( 'false' === $active_row[ 'removed' ] ) { // removed is set to 'false'
-					//Add post
-					$insert_post_return = wp_insert_post(
-						array(
-							'ID'             => ('false' === $active_row[ 'post_id' ] ? NULL : $active_row[ 'post_id' ] ),
-							'post_content'   => json_encode( $active_row ),
-							'post_name'      => '',
-							'post_title'     => wp_strip_all_tags( ( empty( $active_row[ 'title' ] ) ? '' : $active_row[ 'title' ] ) ),
-							'post_status'    => 'publish',
-							'post_type'      => $post_type,
-							'post_parent'    => $post_id,
-							'menu_order'     => $post_order++,
-							'post_excerpt'   => ( empty( $active_row[ 'caption' ] ) ? '' : $active_row[ 'caption' ] ),
-							'comment_status' => 'closed',
-						),
-						TRUE
-					);
-					if ( ! is_wp_error( $insert_post_return ) && ! empty( $active_row[ 'image_id' ] ) && 'false' !== $active_row[ 'image_id' ] ) {
-						add_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $active_row[ 'image_id' ]);
-					}
-					unset( $insert_post_return );
-				} elseif ( 'true' === $active_row[ 'removed' ] && 'false' !== $active_row[ 'post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
-					wp_delete_post( $active_row[ 'post_id' ], TRUE );
-				}
-			}
-			add_action( 'save_post', array( $static_instance, 'action_save_post' ) );
-			unset( $post_type, $post_order, $form_data, $static_instance );
-		} else {
-			trigger_error( __( 'Required post_type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
+		$data_content_type = $options['data_content_type'];
+		if ( empty( $data_content_type ) && class_exists( $data_content_type ) && method_exists( $data_content_type, 'save_post' ) && method_exists( $data_content_type, 'delete_post' ) ) {
+			return;
 		}
+		$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
+		$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
+		if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going
+			return;
+		}
+		$static_instance = get_called_class();
+		remove_action( 'save_post', array( $static_instance, 'action_save_post' ) );
+		foreach ( (array) $form_data['sort_order'] as $row_id ) {
+			if ( empty( $form_data[ 'rows' ][ $row_id ] ) ) { // If the row is empty no need to keep going
+				continue;
+			}
+			$active_row = &$form_data[ 'rows' ][ $row_id ];
+			if ( 'false' === $active_row[ 'removed' ] ) { // removed is set to 'false'
+				$active_row[ 'order_id' ] = $post_order;
+				$insert_post_return = $data_content_type::save_post( $active_row, array(
+					'post_parent' => $post_id,
+				) );
+				unset( $insert_post_return );
+			} elseif ( 'true' === $active_row[ 'removed' ] && 'false' !== $active_row[ 'post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
+				$data_content_type::delete_post( $active_row[ 'post_id' ] );
+			}
+		}
+		add_action( 'save_post', array( $static_instance, 'action_save_post' ) );
+		unset( $post_type, $post_order, $form_data, $static_instance );
 	}
 }

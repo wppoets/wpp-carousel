@@ -100,6 +100,74 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 	///** Used to enable cascade delete */
 	//const ENABLE_CASCADE_DELETE = FALSE;
 
-	// There is nothing special to do for this content type. It is a raw content type used only for storing the slides nothing more
+	/** Used to keep the default slide array data */
+	static protected $_default_data = array(
+		'post_id' => 'false',
+		'image' => NULL,
+		'image_id' => 'false',
+		'title' => NULL,
+		'caption' => NULL,
+		'order_id'  => 0,
+	);
+
+	/**
+	 * 
+	 */
+	static public function get_posts( $options ) {
+		$slides_query = new \WP_Query( wpp_array_merge_nested ( 
+			array( 
+				'post_type'      => static::POST_TYPE,
+				'post_status'    => 'publish',
+				'order'          => 'ASC',
+				'order_by'       => 'menu_order',
+				'nopaging'       => TRUE,
+				'posts_per_page' => -1,
+			),
+			$options
+		) );
+		$slides = ( empty( $slides_query->posts ) ? array() : $slides_query->posts );
+		wp_reset_postdata();
+		foreach ( $slides as &$slide ) {
+			$slide->post_content_decode = json_decode( $slide->post_content, TRUE );
+		}
+		return $slides;
+	}
+
+	/**
+	 * 
+	 */
+	static public function save_post( $data, $options ) {
+		$data = wpp_array_merge_nested(
+			static::$_default_data,
+			$data
+		);
+		$insert_post_return = wp_insert_post( 
+			wpp_array_merge_nested(
+				array(
+					'ID'             => ('false' === $data[ 'post_id' ] ? NULL : $data[ 'post_id' ] ),
+					'post_content'   => json_encode( $data ),
+					'post_name'      => '',
+					'post_title'     => wp_strip_all_tags( ( empty( $data[ 'title' ] ) ? '' : $data[ 'title' ] ) ),
+					'post_status'    => 'publish',
+					'post_type'      => static::POST_TYPE,
+					'menu_order'     => ( empty( $data[ 'order_id' ] ) ? 0 : $data[ 'order_id' ] ),
+					'post_excerpt'   => ( empty( $data[ 'caption' ] ) ? '' : $data[ 'caption' ] ),
+					'comment_status' => 'closed',
+				),
+				$options
+			),
+			TRUE
+		);
+		if ( ! is_wp_error( $insert_post_return ) && ! empty( $data[ 'image_id' ] ) && 'false' !== $data[ 'image_id' ] ) {
+			add_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'image_id' ]);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	static public function delete_post( $post_id, $options = array() ) {
+		wp_delete_post( $post_id, TRUE );
+	}
 
 }

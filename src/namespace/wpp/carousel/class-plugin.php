@@ -73,7 +73,7 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			),
 			'meta_box_options' => array(
 				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box" => array(
-					'post_type' => \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE,
+					'data_content_type' => "\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
 					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
 					'slide_types' => self::$_slide_tyes,
 				),
