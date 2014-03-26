@@ -91,8 +91,8 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 		parent::action_meta_box_display( $post, $callback_args );
 		$empty_message = __( 'Nothing to display, you have no slides.', static::TEXT_DOMAIN );
 		$carousel_slides = array();
-		if ( \WPP\Carousel\Content_Types\Carousel_Slide::is_initialized() ) {
-			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide::POST_TYPE;
+		if ( \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::is_initialized() ) {
+			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE;
 			$carousel_slide_query = new \WP_Query( array( 
 				'post_type'      => $post_type,
 				'post_status'    => 'publish',
@@ -165,8 +165,8 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	 */
 	static public function action_save_post( $post_id ) {
 		parent::action_save_post( $post_id );
-		if ( \WPP\Carousel\Content_Types\Carousel_Slide::is_initialized() ) {
-			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide::POST_TYPE;
+		if ( \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::is_initialized() ) {
+			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE;
 			$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
 			$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
 			if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going

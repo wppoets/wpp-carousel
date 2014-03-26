@@ -76,3 +76,28 @@ if ( ! function_exists( 'wpp_array_merge_nested' ) ) {
 		return $return_array; // Return results
 	}
 }
+
+/**
+ * General Helper function for creating
+ *
+ * The code for the most part was taken from WordPress's shortcode_atts() function
+ * 
+ * @author Michael Stutz <michaeljstutz@gmail.com>
+ * @param array $default_options The base options, anything not in this array will not be set
+ * @param array $options The options to be set
+ * @return array The completed options array
+ * @version 1.0.0
+ */
+if ( ! function_exists( 'wpp_array_merge_options' ) ) {
+	function wpp_array_merge_options( $default_options, $options ) {
+		$return_options = array();
+		foreach ( $default_options as $name => $value ) {
+			if ( array_key_exists( $name, $options ) ) {
+				$return_options[ $name ] = $options[ $name ];
+			} else {
+				$return_options[ $name ] = $default;
+			}
+		}
+		return $return_options;
+	}
+}

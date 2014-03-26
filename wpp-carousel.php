@@ -3,7 +3,7 @@
  * Plugin Name: WPP Carousel
  * Plugin URI: http://wppoets.com/plugins/carousel.html
  * Description: TODO...
- * Version: 0.9
+ * Version: 0.9.0
  * Author: WP Poets <plugins@wppoets.com>
  * Author URI: http://wppoets.com
  * License: GPLv2 (dual-licensed)

@@ -20,7 +20,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Carousel_Slide extends \WPP\Carousel\Base\Content_Type {
+class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 
 	/** Used to store the post-type id */
 	const POST_TYPE= 'wpp-carousel-slide';

@@ -20,7 +20,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
- class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
+class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
  	
 	/** Used to set the meta-box ID */
 	const ID = 'wpp-carousel-meta-box';

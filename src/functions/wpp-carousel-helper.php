@@ -27,6 +27,16 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @param string $carousel_name The name/title for the carousel to display
  * @return void No return value
  */
-function wpp_carousel_display( $carousel_name ) {
-	//
+function wpp_carousel( $options ) {
+	\WPP\Carousel\Plugin::display_carousel( $options );
+}
+
+/**
+ * Helper function for displaying a carousel
+ * 
+ * @param string $carousel_name The name/title for the carousel to display
+ * @return void No return value
+ */
+function get_wpp_carousel( $options ) {
+	\WPP\Carousel\Plugin::get_carousel( $options );
 }

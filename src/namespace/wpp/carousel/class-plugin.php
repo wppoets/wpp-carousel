@@ -29,10 +29,24 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 	
 	/** Used to set the plugins ID */
 	const ID = 'wpp-carousel';
+
+	/** Used to store the text domain */
+	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
 	
 	/** Used to enable shortcode function */	
 	const SHORTCODE_ENABLE = TRUE;
 	
+	/** Default carousel options */
+	static private $_default_carousel_options = array(
+		'id' => '',
+		'title' => '',
+		'slug' => '',
+	);
+
+	static private $_slide_tyes = array(
+		'static' => "\WPP\Carousel\Slide_Types\Static_Slide_Type",
+	);
+
 	/**
 	 * Initialization point for the static class
 	 * 
@@ -44,8 +58,8 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 				"\WPP\Carousel\Admin", 
 			),
 			'content_types' => array( 
-				"\WPP\Carousel\Content_Types\Carousel",
-				"\WPP\Carousel\Content_Types\Carousel_Slide",
+				"\WPP\Carousel\Content_Types\Carousel_Content_Type",
+				"\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
 			),
 		) );
 	}
@@ -58,20 +72,51 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 	 * @return string Returns the results of the shortcode
 	 */
 	static public function action_shortcode( $atts, $content='' ) {
-		wpp_debug( $atts );
 		$shortcode_tag = static::SHORTCODE_TAG;
 		if ( empty( $shortcode_tag ) ) {
 			$shortcode_tag = static::ID;
 		}
-		extract( shortcode_atts( 
-			array(
-				'id' => '',
-				'title' => '',
-				'slug' => '',
-			),
+		$options = shortcode_atts( 
+			self::$_default_carousel_options,
 			$atts,
 			$shortcode_tag
-		) );
-		return $content;
+		);
+		return static::get_carousel( $options );
+	}
+
+	/**
+	 * Display method for the carousel
+	 * 
+	 * The method processes the shortcode command
+	 * 
+	 * @return string Returns the results of the shortcode
+	 */
+	static public function display_carousel( $options ) {
+		if ( ! static::is_initialized() ) {
+			trigger_error( __( 'Plugin not initialized.', static::TEXT_DOMAIN ), E_USER_NOTICE);
+			return;
+		}
+		print( static::get_carousel( $options ) );
+	}
+
+	/**
+	 * Get method for the carousel
+	 * 
+	 * The method for returning the carousel
+	 * 
+	 * @return void No return value
+	 */
+	static public function get_carousel( $options ) {
+		if ( ! static::is_initialized() ) {
+			trigger_error( __( 'Plugin not initialized.', static::TEXT_DOMAIN ), E_USER_NOTICE);
+			return;
+		}
+		$return_value = '';
+		$options = wpp_array_merge_options(
+			self::$_default_carousel_options,
+			$options
+		);
+		wpp_debug( $options );
+		return $return_value;
 	}
 }

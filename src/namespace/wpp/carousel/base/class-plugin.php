@@ -18,12 +18,15 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  */
 abstract class Plugin {
 	
 	/** Used to set the plugins ID */
 	const ID = 'wpp-plugin';
+	
+	/** Used to store the text domain */
+	const TEXT_DOMAIN = '';
 	
 	/** Used to enable shortcode function */
 	const SHORTCODE_ENABLE = FALSE;
@@ -74,7 +77,17 @@ abstract class Plugin {
 		}
 		self::$_initialized[ $static_instance ] = true;
 	}
-	
+
+	/**
+	 * Method to find the current initialized value of the instance
+	 * 
+	 * @return boolean Returns the initialized value of the instance
+	 */
+	static public function is_initialized() {
+		$static_instance = get_called_class();
+		return ( empty( self::$_initialized[ $static_instance ] ) ? FALSE : TRUE );
+	}
+
 	/**
 	 * Set method for the options
 	 *  
