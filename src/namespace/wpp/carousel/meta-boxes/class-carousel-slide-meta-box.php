@@ -80,6 +80,21 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	const ENABLE_DEFAULT_STYLE = TRUE;
 
 	/**
+	 * Initialization point for the static class
+	 *
+	 * @return void No return value
+	 */
+	static public function init( $options = array() ) {
+		parent::init( wpp_array_merge_nested(
+			array(
+				'post_type'   => '',
+				'slide_types' => array(),
+			),
+			$options
+		) );
+	}
+
+	/**
 	 * WordPress action for displaying the meta-box
 	 *
 	 * @param object $post The post object the metabox is working with
@@ -90,11 +105,11 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	static public function action_meta_box_display( $post, $callback_args ) {
 		parent::action_meta_box_display( $post, $callback_args );
 		$empty_message = __( 'Nothing to display, you have no slides.', static::TEXT_DOMAIN );
+		$options = parent::get_options();
 		$carousel_slides = array();
-		if ( \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::is_initialized() ) {
-			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE;
+		if ( ! empty( $options['post_type'] ) ) {
 			$carousel_slide_query = new \WP_Query( array( 
-				'post_type'      => $post_type,
+				'post_type'      => $options['post_type'],
 				'post_status'    => 'publish',
 				'post_parent'    => $post->ID,
 				'order'          => 'ASC',
@@ -106,8 +121,8 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			wp_reset_postdata();
 		} else {
 			print('<style>#wpp-carousel-slide-table .wpp-carousel-slide-buttons > button{display:none;}</style>');
-			$empty_message = __( 'Error, required content type not initialized.', static::TEXT_DOMAIN );
-			trigger_error( __( 'Required content type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
+			$empty_message = __( 'Error, required post_type not passed.', static::TEXT_DOMAIN );
+			trigger_error( __( 'Required post_type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
 		}
 		?>
 		<table id="wpp-carousel-slide-table">
@@ -165,8 +180,9 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	 */
 	static public function action_save_post( $post_id ) {
 		parent::action_save_post( $post_id );
-		if ( \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::is_initialized() ) {
-			$post_type = \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE;
+		$options = parent::get_options();
+		if ( ! empty( $options['post_type'] ) ) {
+			$post_type = $options['post_type'];
 			$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
 			$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
 			if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going
@@ -207,7 +223,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			add_action( 'save_post', array( $static_instance, 'action_save_post' ) );
 			unset( $post_type, $post_order, $form_data, $static_instance );
 		} else {
-			trigger_error( __( 'Required content type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
+			trigger_error( __( 'Required post_type not initialized, data not saved.', static::TEXT_DOMAIN ), E_USER_NOTICE);
 		}
 	}
 }

@@ -57,9 +57,26 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			'admin_controllers' => array( 
 				"\WPP\Carousel\Admin", 
 			),
-			'content_types' => array( 
+			'admin_controller_options' => array(),
+			'content_types' => array(
 				"\WPP\Carousel\Content_Types\Carousel_Content_Type",
 				"\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
+			),
+			'content_type_options' => array(
+				"\WPP\Carousel\Content_Types\Carousel_Content_Type" => array(
+					'slide_types' => self::$_slide_tyes,
+				),
+			),
+			'meta_boxes' => array(
+				"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box",
+				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box",
+			),
+			'meta_box_options' => array(
+				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box" => array(
+					'post_type' => \WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE,
+					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
+					'slide_types' => self::$_slide_tyes,
+				),
 			),
 		) );
 	}

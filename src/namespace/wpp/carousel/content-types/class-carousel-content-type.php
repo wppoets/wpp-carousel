@@ -105,18 +105,15 @@ class Carousel_Content_Type extends \WPP\Carousel\Base\Content_Type {
 	 *
 	 * @return void No return value
 	 */
-	static public function init() {
-		parent::init( 
+	static public function init( $options = array() ) {
+		parent::init( wpp_array_merge_nested(
 			array(
 				'args' => array(
 					'rewrite' => FALSE,
 				),
-				'meta_boxes' => array( 
-					"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box",
-					"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box",
-				),
-			)
-		);
+			),
+			$options
+		) );
 	}
 
 }

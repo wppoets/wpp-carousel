@@ -74,8 +74,48 @@ abstract class Plugin {
 		}
 		if ( is_admin() ) {
 			static::init_admin_controllers();
+			static::init_meta_boxes();
 		}
 		self::$_initialized[ $static_instance ] = true;
+	}
+
+	/**
+	 * Init method for the admin controllers
+	 * 
+	 * The method loops through the preconfigured admin_controllers 
+	 * array set in the plugin options, then 
+	 * 
+	 * @return void No return value
+	 */
+	static public function init_admin_controllers() {
+		$static_instance = get_called_class();
+		foreach ( (array) self::$_options[ $static_instance ][ 'admin_controllers' ] as $class ) {
+			static::init_static_class( $class, 'admin_controller_options' );
+		}
+	}
+
+	/**
+	 * Init method for the content types
+	 * 
+	 * @return void No return value
+	 */
+	static public function init_content_types() {
+		$static_instance = get_called_class();
+		foreach ( (array) self::$_options[ $static_instance ][ 'content_types' ] as $class ) {
+			static::init_static_class( $class, 'content_type_options' );
+		}
+	}
+
+	/**
+	 * Init method for the meta boxes
+	 * 
+	 * @return void No return value
+	 */
+	static public function init_meta_boxes() {
+		$static_instance = get_called_class();
+		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $class ) {
+			static::init_static_class( $class, 'meta_box_options' );
+		}
 	}
 
 	/**
@@ -104,7 +144,11 @@ abstract class Plugin {
 		self::$_options[ $static_instance ] = wpp_array_merge_nested(
 			array( //Default options
 				'content_types' => array(),
+				'content_type_options' => array(),
 				'admin_controllers' => array(),
+				'admin_controller_options' => array(),
+				'meta_boxes' => array(),
+				'meta_box_options' => array(),
 			),
 			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
@@ -119,33 +163,6 @@ abstract class Plugin {
 	static public function get_options() {
 		$static_instance = get_called_class();
 		return self::$_options[ $static_instance ];
-	}
-
-	/**
-	 * Init method for the content types
-	 * 
-	 * @return void No return value
-	 */
-	static public function init_content_types() {
-		$static_instance = get_called_class();
-		foreach ( (array) self::$_options[ $static_instance ][ 'content_types' ] as $class ) {
-			static::init_static_class( $class );
-		}
-	}
-
-	/**
-	 * Init method for the admin controllers
-	 * 
-	 * The method loops through the preconfigured admin_controllers 
-	 * array set in the plugin options, then 
-	 * 
-	 * @return void No return value
-	 */
-	static public function init_admin_controllers() {
-		$static_instance = get_called_class();
-		foreach ( (array) self::$_options[ $static_instance ][ 'admin_controllers' ] as $class ) {
-			static::init_static_class( $class );
-		}
 	}
 
 	/**
@@ -192,9 +209,16 @@ abstract class Plugin {
 	 * 
 	 * @return void No return value
 	 */
-	static private function init_static_class( $class ) {
+	static private function init_static_class( $class, $option_key ) {
+		$static_instance = get_called_class();
+		$options = &self::$_options[ $static_instance ];
 		if ( class_exists( $class ) && method_exists( $class, 'init' ) ) {
-			$class::init();
+			$class_options = array();
+			if ( ! empty( $options[ $option_key ][ $class ] ) ) {
+				$class_options = $options[ $option_key ][ $class ];
+			}
+			$class::init( $class_options );
+			unset( $class_options );
 		}
 	}
 }

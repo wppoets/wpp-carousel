@@ -109,7 +109,7 @@ abstract class Content_Type {
 	/**
 	 * Initialization point for the static class
 	 * 
-	 * @param string|array $options An optional array containing the meta box options
+	 * @param string|array $options An optional array containing the options
 	 *
 	 * @return void No return value
 	 */
@@ -133,26 +133,7 @@ abstract class Content_Type {
 		if ( static::ENABLE_CASCADE_DELETE ) {
 			add_action( 'delete_post', array( $static_instance, 'action_delete_post_cascade' ) );
 		}
-		if ( is_admin() ) {
-			static::init_meta_boxes();
-		}
 		self::$_initialized[ $static_instance ] = true;
-	}
-	
-	/**
-	 * Init method for the meta boxes
-	 * 
-	 * @return void No return value
-	 */
-	static public function init_meta_boxes() {
-		$static_instance = get_called_class();
-		foreach ( (array) self::$_options[ $static_instance ][ 'meta_boxes' ] as $class ) {
-			if ( class_exists( $class ) && method_exists( $class, 'init' ) ) {
-				$class::init( array(
-					'include_post_types' => array( static::POST_TYPE ),
-				) );
-			}
-		}
 	}
 
 	/**
@@ -218,7 +199,6 @@ abstract class Content_Type {
 					'can_export'          => static::CAN_EXPORT,
 					'rewrite'             => array( 'slug' => static::POST_TYPE ),
 				),
-				'meta_boxes' => array(),
 			),
 			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
