@@ -18,7 +18,7 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.0
+ * @version 1.0.3
  */
 abstract class Meta_Box {
 
@@ -62,7 +62,13 @@ abstract class Meta_Box {
 	const AJAX_SUFFIX = ''; // If left empty will use ID
 
 	/** Used to store the form prefex */
-	const FORM_PREFIX = 'wpp_meta_box'; // should only use [a-z0-9_]
+	const HTML_FORM_PREFIX = 'wpp_meta_box'; // should only use [a-z0-9_]
+
+	/** Used to store the form prefex */
+	const HTML_CLASS_PREFIX = 'wpp-meta-box-'; // should only use [a-z0-9_-]
+
+	/** Used to store the form prefex */
+	const HTML_ID_PREFIX = 'wpp-meta-box-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
 	const METADATA_KEY_PREFIX = '_wpp_meta_box';
@@ -78,6 +84,9 @@ abstract class Meta_Box {
 
 	/** Used to enable the default styles */
 	const ENABLE_DEFAULT_STYLE = FALSE;
+
+	/** Used to enable the admin footer */
+	const ENABLE_ADMIN_FOOTER = FALSE;
 
 	/** Used to store the initialization of the class */
 	static private $_initialized = array();
@@ -197,6 +206,9 @@ abstract class Meta_Box {
 			wp_enqueue_media(); 
 		}
 		add_action( 'admin_enqueue_scripts', array( $static_instance, 'action_admin_enqueue_scripts' ) );
+		if ( static::ENABLE_ADMIN_FOOTER ) {
+			add_action( 'admin_footer', array( $static_instance, 'action_admin_footer' ) );
+		}
 	}
 
 	/**
@@ -227,6 +239,15 @@ abstract class Meta_Box {
 	}
 
 	/**
+	 * WordPress action for adding things to the admin footer
+	 *
+	 * @return void No return value
+	 */
+	static public function action_admin_footer() {
+		//Print somthing in the admin footer section
+	}
+
+	/**
 	 * WordPress action for displaying the meta-box
 	 *
 	 * @param object $post The post object the metabox is working with
@@ -235,7 +256,7 @@ abstract class Meta_Box {
 	 * @return void No return value
 	 */
 	static public function action_meta_box_display( $post, $callback_args ) {
-		wp_nonce_field( static::NONCE_ACTION, static::FORM_PREFIX . '_wpnonce' );
+		wp_nonce_field( static::NONCE_ACTION, static::HTML_FORM_PREFIX . '_wpnonce' );
 	}
 
 	/**
@@ -253,7 +274,7 @@ abstract class Meta_Box {
 		if ( wp_is_post_revision( $post_id ) ) {  // Check if is revision
 			return; 
 		}
-		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::FORM_PREFIX . '_wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) {  // Verify wpnonce
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::HTML_FORM_PREFIX . '_wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) {  // Verify wpnonce
 			return; 
 		}
 	}

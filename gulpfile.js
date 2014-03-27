@@ -79,3 +79,9 @@ gulp.task('svnrelease', function() {
 		//	}
 		//));
 });
+
+// Task - watch
+gulp.task('watch', function() {
+	gulp.watch(src_paths.styles, ['styles']);
+	gulp.watch(src_paths.scripts, ['scripts']);
+});

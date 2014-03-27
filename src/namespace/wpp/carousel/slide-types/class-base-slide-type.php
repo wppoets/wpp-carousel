@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Slide_Type;
+<?php namespace WPP\Carousel\Slide_Types;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -79,6 +79,20 @@ abstract class Base_Slide_Type {
 	}
 
 	/**
+	 * Function for building the javascript field content
+	 *
+	 * The javascript varible "row" id must be present for fields to map back to the form data 
+	 */
+	static public function get_javascript_form_fields( $html_id_prefix, $html_class_prefix, $html_form_prefix ) {
+$content = <<<"EOT"
+		content = content + [
+				'<input class="{$html_class_prefix}-post-id" name="{$html_form_prefix}[rows][' + row_id + '][slide_value]" value="true" />',
+			].join('');
+EOT;
+		return $content;
+	}
+
+	/**
 	 * 
 	 */
 	static public function build_post_data( &$form_data ) {
@@ -95,8 +109,11 @@ abstract class Base_Slide_Type {
 	/**
 	 * 
 	 */
-	static public function build_json_data( &$post ) {
-		return json_encode( array( $post ) );
+	static public function build_data_array( &$post ) {
+		if ( empty( $post->post_content_decode ) ) {
+			return array();
+		}
+		return $post->post_content_decode;
 	}
 
 	/**

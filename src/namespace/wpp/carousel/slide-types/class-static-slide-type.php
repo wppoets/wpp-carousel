@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Slide_Type;
+<?php namespace WPP\Carousel\Slide_Types;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -28,4 +28,24 @@ class Static_Slide_Type extends Base_Slide_Type {
 	/** Used by allow_image_change() */
 	const ALLOW_IMAGE_CHANGE = TRUE;
 	
+	/**
+	 * Function for building the javascript field content
+	 *
+	 * The javascript varible "row" id must be present for fields to map back to the form data 
+	 */
+	static public function get_javascript_form_fields( $html_id_prefix, $html_class_prefix, $html_form_prefix ) {
+$content = <<<"EOT"
+		content = content + [
+				'<input class="{$html_class_prefix}post-id" type="hidden" name="{$html_form_prefix}[rows][' + row_id + '][slide_post_id]" value="false">',
+				'<input class="{$html_class_prefix}title-enabled" type="checkbox" name="{$html_form_prefix}[rows][' + row_id + '][slide_title_enabled]" value="true" />Title:<br />',
+				'<input class="{$html_class_prefix}title widefat" type="text" name="{$html_form_prefix}[rows][' + row_id + '][slide_title]" value="" /><br />',
+				'<input class="{$html_class_prefix}link-enabled" type="checkbox" name="{$html_form_prefix}[rows][' + row_id + '][slide_link_enabled]" value="true" />Link:<br />',
+				'<input class="{$html_class_prefix}link widefat" type="text" name="{$html_form_prefix}[rows][' + row_id + '][slide_link]" value="" /><br />',
+				'<input class="{$html_class_prefix}caption-enabled" type="checkbox" name="{$html_form_prefix}[rows][' + row_id + '][slide_caption_enabled]" value="true" />Caption:<br />',
+				'<textarea class="{$html_class_prefix}caption widefat" rows="1" cols="40" name="{$html_form_prefix}[rows][' + row_id + '][slide_caption]"></textarea>',
+			].join('');
+EOT;
+		return $content;
+	}
+
 }

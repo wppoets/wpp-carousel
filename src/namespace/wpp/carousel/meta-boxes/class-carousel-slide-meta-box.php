@@ -62,7 +62,13 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	//const AJAX_SUFFIX = ''; // If left empty will use ID
 
 	/** Used to store the form prefex */
-	const FORM_PREFIX = 'wpp_carousel_slide_fields'; // should only use [a-z0-9_]
+	const HTML_FORM_PREFIX = 'wpp_carousel_slide_fields'; // should only use [a-z0-9_]
+
+	/** Used to store the form prefex */
+	const HTML_CLASS_PREFIX = 'wpp-carousel-slide-'; // should only use [a-z0-9_-]
+
+	/** Used to store the form prefex */
+	const HTML_ID_PREFIX = 'wpp-carousel-slide-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
 	const METADATA_KEY_PREFIX = '_wpp_carousel_slide';
@@ -78,6 +84,9 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 
 	/** Used to enable the default styles */
 	const ENABLE_DEFAULT_STYLE = TRUE;
+
+	/** Used to enable the admin footer */
+	const ENABLE_ADMIN_FOOTER = TRUE;
 
 	/**
 	 * Initialization point for the static class
@@ -113,53 +122,131 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 				'post_parent' => $post->ID,
 			) );
 		}
-		?>
-		<table id="wpp-carousel-slide-table">
-			<thead><tr><th class="wpp-carousel-slide-buttons" colspan="4"><button class="wpp-carousel-slide-add-static-slide" type="button"><?php echo __( 'Add Static Slide', static::TEXT_DOMAIN ); ?></button><!-- <button class="wpp-carousel-slide-add-dynamic-slide" type="button"><?php echo __( 'Add Dynamic Slide', static::TEXT_DOMAIN ); ?></button> --></th></tr></thead>
-			<tbody><tr class="wpp-carousel-slide-empty-row"><td class="wpp-carousel-slide-empty" colspan="4"><?php echo __( 'Slide data has not finished loading, please be patient...', static::TEXT_DOMAIN ); ?></td></tr></tbody>
-			<tfoot><tr><td class="wpp-carousel-slide-buttons" colspan="4"><button class="wpp-carousel-slide-add-static-slide" type="button"><?php echo __( 'Add Static Slide', static::TEXT_DOMAIN ); ?></button><!-- <button class="wpp-carousel-slide-add-dynamic-slide" type="button"><?php echo __( 'Add Dynamic Slide', static::TEXT_DOMAIN ); ?></button> --></td></tr></tfoot>
+		$carousel_json_data = array();
+		foreach ( $carousel_slides as $slide ) {
+			if ( empty( $slide->post_content_decode[ 'slide_type' ] ) 
+					|| empty( $options[ 'slide_types' ][ $slide->post_content_decode[ 'slide_type' ] ] ) ) {
+				continue;
+			}
+			$type_class = $options[ 'slide_types' ][ $slide->post_content_decode[ 'slide_type' ] ];
+			$carousel_json_data[] = $type_class::build_data_array( $slide );
+		}
+?>
+		<table id="<?php echo static::HTML_ID_PREFIX; ?>table">
+			<thead><tr><th class="<?php echo static::HTML_CLASS_PREFIX; ?>buttons" colspan="4"><button class="<?php echo static::HTML_CLASS_PREFIX; ?>add-slide" type="button"><?php echo __( 'Add Slide', static::TEXT_DOMAIN ); ?></button></th></tr></thead>
+			<tbody><tr class="<?php echo static::HTML_CLASS_PREFIX; ?>empty-row"><td class="<?php echo static::HTML_CLASS_PREFIX; ?>empty" colspan="4"><?php echo __( 'Slide data has not finished loading, please be patient...', static::TEXT_DOMAIN ); ?></td></tr></tbody>
+			<tfoot><tr><td class="<?php echo static::HTML_CLASS_PREFIX; ?>buttons" colspan="4"><button class="<?php echo static::HTML_CLASS_PREFIX; ?>add-slide" type="button"><?php echo __( 'Add Slide', static::TEXT_DOMAIN ); ?></button></td></tr></tfoot>
 		</table>
 		<script>
-			var wpp_carousel_slide_post_id = <?php echo $post->ID; ?>;
-			var wpp_carousel_slide_next_row_id = 1;
-			var wpp_carousel_slide_visible_slides = 0;
-			var wpp_carousel_slide_empty_message = '<?php echo $empty_message; ?>';
-			var wpp_carousel_slide_starting_data = [ 
-			<?php 
-		foreach ( $carousel_slides as $slide ) {
-			$starting_data_row = '';
-			$fields = $slide->post_content_decode;
-			if ( ! empty( $fields['type'] ) && 'static' === $fields['type'] ) {
-				$slide->post_featured_id = get_post_thumbnail_id( $slide->ID );
-				$starting_data_row .= "\n\t\t\t\t{";
-				$starting_data_row .= "'slide_post_id':'{$slide->ID}',";
-				$starting_data_row .= "'slide_type':'static',";
-				if ( ! empty( $slide->post_featured_id ) ) {
-					$image = wp_get_attachment_image_src( $slide->post_featured_id, 'thumbnail' );
-					if ( $image ) {
-						list($src, $width, $height) = $image;
-						$slide->post_featured_url = $src;
-						$starting_data_row .= "'slide_image_id':'{$slide->post_featured_id}',";
-						$starting_data_row .= "'slide_image_src':'{$slide->post_featured_url}',";
-						unset( $src, $width, $height );
-					}
-					unset( $image );
-				}
-				$starting_data_row .= "'slide_title':'{$slide->post_title}',";
-				$starting_data_row .= "'slide_title_enabled':" . ( empty( $fields['title_enabled'] ) ? 'false' : $fields['title_enabled'] ) . ",";
-				$starting_data_row .= "'slide_link':'" . ( empty( $fields['link'] ) ? '' : $fields['link'] ) . "',";
-				$starting_data_row .= "'slide_link_enabled':" . ( empty( $fields['link_enabled'] ) ? 'false' : $fields['link_enabled'] ) . ",";
-				$starting_data_row .= "'slide_caption':'{$slide->post_excerpt}',";
-				$starting_data_row .= "'slide_caption_enabled':" . ( empty( $fields['caption_enabled'] ) ? 'false' : $fields['caption_enabled'] ) . ",";
-				$starting_data_row .= '},';
-			}
-			print( $starting_data_row );
-		}
-		?>
+			var wpp_carousel_slides = {
+				'post_id'            : <?php echo $post->ID; ?>,
+				'next_row'           : 1,
+				'visible_slides'     : 0,
+				'empty_message'      : '<?php echo $empty_message; ?>',
+				'starting_data'      : <?php echo json_encode( $carousel_json_data ); ?>,
+				'slide_type'         : {},
+				'slide_type_options' : {},
+				'slide_types'        : <?php echo json_encode( array_keys( $options[ 'slide_types' ] ) ); ?>,
 
-			];
+			};
 		</script>
-		<?php
+<?php
+	}
+
+	/**
+	 * WordPress action for enqueueing admin scripts
+	 *
+	 * @return void No return value
+	 */
+	static public function action_admin_enqueue_scripts() {
+		wp_register_style( 
+			'jquery-ui-1.10.3.mp6', 
+			plugins_url( '/styles/' . 'jquery-ui-1.10.3.mp6.css', static::PLUGIN_FILE ), 
+			array(), 
+			static::ASSET_VER,
+			'all'
+		);
+		wp_enqueue_style( 'jquery-ui-1.10.3.mp6' );
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-ui-core' );
+		wp_enqueue_script( 'jquery-ui-dialog' );
+		parent::action_admin_enqueue_scripts();
+	}
+	
+	/**
+	 * WordPress action for adding things to the admin footer
+	 *
+	 * @return void No return value
+	 */
+	static public function action_admin_footer() {
+		$options = parent::get_options();
+?>
+	<div id="<?php echo self::HTML_ID_PREFIX; ?>confirm-delete-dialog" title="Delete the slide?">
+	  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The slide will be permanently deleted and cannot be recovered. Are you sure?</p>
+	</div>
+	<div id="<?php echo self::HTML_ID_PREFIX; ?>slide-type-dialog" title="Select Slide Type">
+		<p class="validateTips">Please pick one from the following.</p>
+		<form>
+			<fieldset>
+<?php foreach( $options[ 'slide_types' ] as $slide_type => &$slide_class ) : ?>
+				<input type="radio" name="slide_type" value="<?php echo $slide_type; ?>"><?php echo ucwords( $slide_type ); ?><br>
+<?php endforeach; ?>
+			</fieldset>
+		</form>
+	</div>
+<script>
+<?php foreach( $options[ 'slide_types' ] as $slide_type => $slide_class ) : ?>
+		wpp_carousel_slides.slide_type_options.<?php echo $slide_type; ?> = {
+			has_image    : <?php echo ( $slide_class::has_image() ) ? 'true' : 'false' ;?>,
+			allow_image_change : <?php echo ( $slide_class::allow_image_change() ) ? 'true' : 'false' ;?>,
+		};
+		wpp_carousel_slides.slide_type.<?php echo $slide_type; ?> = function( row_id ) {
+			var content = '';
+	<?php echo $slide_class::get_javascript_form_fields( self::HTML_ID_PREFIX, self::HTML_CLASS_PREFIX, self::HTML_FORM_PREFIX ); ?>
+
+			return content;
+		};
+<?php endforeach; ?>
+		wpp_carousel_slides.new_row = function( row_id, slide_type ) {
+			var image_div = ' <?php echo self::HTML_CLASS_PREFIX; ?>image-not-selected';
+			var image_change = '(<a class="<?php echo self::HTML_CLASS_PREFIX; ?>select-image-button" href="#">change</a>)';
+			if(wpp_carousel_slides.slide_type_options[ slide_type ]){
+				if(wpp_carousel_slides.slide_type_options[ slide_type ].has_image == 'false') {
+					image_div = ' <?php echo self::HTML_CLASS_PREFIX; ?>image-not-available';
+				}
+				if(wpp_carousel_slides.slide_type_options[ slide_type ].allow_image_change == 'false') {
+					image_change = '';
+				}
+			}
+			var content = [
+				'<tr id="<?php echo self::HTML_ID_PREFIX; ?>row-' + row_id + '" class="<?php echo self::HTML_CLASS_PREFIX; ?>row">',
+					'<td class="<?php echo self::HTML_CLASS_PREFIX; ?>colunm-1">',
+						'<button type="button" class="button <?php echo self::HTML_CLASS_PREFIX; ?>remove-slide">-</button>',
+						'<input class="<?php echo self::HTML_CLASS_PREFIX; ?>field-removed" type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[rows][' + row_id + '][slide_removed]" value="false">',
+					'</td>',
+					'<td class="<?php echo self::HTML_CLASS_PREFIX; ?>colunm-2">',
+						'Image: ' + image_change + '<br />',
+						'<div class="<?php echo self::HTML_CLASS_PREFIX; ?>image' + image_div + '"><img class="<?php echo self::HTML_CLASS_PREFIX; ?>field-image-src" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=" width="150" height="150" /></div>',
+						'<input class="<?php echo self::HTML_CLASS_PREFIX; ?>field-image-id" type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[rows][' + row_id + '][slide_image_id]" value="false">',
+					'</td>',
+					'<td class="<?php echo self::HTML_CLASS_PREFIX; ?>colunm-3">',
+			].join('');
+			if ( wpp_carousel_slides.slide_types.indexOf( slide_type ) != -1 ) {
+				content = content + wpp_carousel_slides.slide_type[ slide_type ]( row_id );
+			}
+			content = content + [
+					'</td>',
+					'<td class="<?php echo self::HTML_CLASS_PREFIX; ?>colunm-4">',
+						'<div class="<?php echo self::HTML_CLASS_PREFIX; ?>sort dashicons dashicons-sort"></div>',
+						'<input type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[rows][' + row_id + '][slide_type]" value="' + slide_type + '">',
+						'<input type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[sort_order][]" value="' + row_id + '">',
+					'</td>',
+				'</tr>',
+			].join('');
+			return content;
+		}
+	</script>
+<?php
 	}
 
 	/**
@@ -175,7 +262,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			return;
 		}
 		$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
-		$form_data = filter_input( INPUT_POST, static::FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
+		$form_data = filter_input( INPUT_POST, static::HTML_FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
 		if ( empty( $form_data['sort_order'] ) ) { // If the sort_order is empty no need to keep going
 			return;
 		}
@@ -186,14 +273,14 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 				continue;
 			}
 			$active_row = &$form_data[ 'rows' ][ $row_id ];
-			if ( 'false' === $active_row[ 'removed' ] ) { // removed is set to 'false'
-				$active_row[ 'order_id' ] = $post_order;
+			if ( 'false' === $active_row[ 'slide_removed' ] ) { // removed is set to 'false'
+				$active_row[ 'order_id' ] = $post_order++;
 				$insert_post_return = $data_content_type::save_post( $active_row, array(
 					'post_parent' => $post_id,
 				) );
 				unset( $insert_post_return );
-			} elseif ( 'true' === $active_row[ 'removed' ] && 'false' !== $active_row[ 'post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
-				$data_content_type::delete_post( $active_row[ 'post_id' ] );
+			} elseif ( 'true' === $active_row[ 'slide_removed' ] && 'false' !== $active_row[ 'slide_post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
+				$data_content_type::delete_post( $active_row[ 'slide_post_id' ] );
 			}
 		}
 		add_action( 'save_post', array( $static_instance, 'action_save_post' ) );

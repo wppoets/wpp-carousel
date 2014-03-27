@@ -62,7 +62,13 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	//const AJAX_SUFFIX = ''; // If left empty will use ID
 
 	/** Used to store the form prefex */
-	const FORM_PREFIX = 'wpp_carousel_fields'; // should only use [a-z0-9_]
+	const HTML_FORM_PREFIX = 'wpp_carousel_fields'; // should only use [a-z0-9_]
+
+	/** Used to store the form prefex */
+	const HTML_CLASS_PREFIX = 'wpp-carousel-'; // should only use [a-z0-9_-]
+
+	/** Used to store the form prefex */
+	const HTML_ID_PREFIX = 'wpp-carousel-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
 	const METADATA_KEY_PREFIX = '_wpp_carousel';
@@ -78,6 +84,9 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 
 	/** Used to enable the default styles */
 	const ENABLE_DEFAULT_STYLE  = TRUE;
+
+	///** Used to enable the admin footer */
+	//const ENABLE_ADMIN_FOOTER = FALSE;
 
 	/**
 	 * WordPress action for displaying the meta-box
