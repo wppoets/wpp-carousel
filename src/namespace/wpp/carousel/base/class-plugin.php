@@ -18,12 +18,15 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.1
+ * @version 1.0.2
  */
 abstract class Plugin {
 	
 	/** Used to set the plugins ID */
 	const ID = 'wpp-plugin';
+
+	/** Used to set the plugins ID */
+	const CACHE_GROUP = 'wpp-plugin';
 	
 	/** Used to store the text domain */
 	const TEXT_DOMAIN = '';

@@ -51,35 +51,21 @@ abstract class Base_Slide_Type {
 	);
 
 	/**
-	 * 
+	 * Method for returning the HAS_IMAGE static const
 	 */
 	static public function has_image() {
 		return static::HAS_IMAGE;
 	}
 
 	/**
-	 * 
+	 * Method for returning the ALLOW_IMAGE_CHANGE static const
 	 */
 	static public function allow_image_change() {
 		return static::ALLOW_IMAGE_CHANGE;
 	}
 
 	/**
-	 * 
-	 */
-	static public function get_image_id( &$post ) {
-		return NULL;
-	}
-
-	/**
-	 * 
-	 */
-	static public function get_meta_box_display( $row_id, &$settings ) {
-		return '';
-	}
-
-	/**
-	 * Function for building the javascript field content
+	 * Method for building the javascript field content
 	 *
 	 * The javascript varible "row" id must be present for fields to map back to the form data 
 	 */
@@ -93,34 +79,35 @@ EOT;
 	}
 
 	/**
-	 * 
+	 * Method for getting the slides based on the post passed in
 	 */
-	static public function build_post_data( &$form_data ) {
-		return static::$_default_post_data;
+	static public function get_slides( &$post ) {
+		return array( self::$_default_slide );
 	}
 
 	/**
-	 * 
+	 * Method for building the data array from the passed post
+	 *
+	 * Builds the data array to return. By default all the data is stored in the post_content_decoded
 	 */
-	static public function build_slides( &$post ) {
-		return array();
-	}
-
-	/**
-	 * 
-	 */
-	static public function build_data_array( &$post ) {
-		if ( empty( $post->post_content_decode ) ) {
+	static public function get_slide_data( &$post ) {
+		if ( empty( $post->post_content_decoded ) ) {
 			return array();
 		}
-		return $post->post_content_decode;
-	}
-
-	/**
-	 * 
-	 */
-	static public function build_json_to_field() {
-		return array();
+		if ( empty( $post->post_content_decoded['slide_post_id'] ) ) {
+			return $post->post_content_decoded;
+		}
+		$post_thumbnail_id = get_post_thumbnail_id( $post->post_content_decoded['slide_post_id'] );
+		if ( ! empty( $post_thumbnail_id ) ) {
+			$thumbnail_image = wp_get_attachment_image_src( $post_thumbnail_id, 'thumbnail' );
+			if ( $thumbnail_image ) {
+				list($src, $width, $height) = $thumbnail_image;
+				$post->post_content_decoded['slide_image_src'] = $src;
+				unset( $src, $width, $height );
+			}
+			unset( $thumbnail_image );
+		}
+		return $post->post_content_decoded;
 	}
 
 }

@@ -18,9 +18,12 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  */
 abstract class Admin {
+
+	/** Used to set if the class uses action_save_post */
+	const HAS_SAVE_POST = FALSE;
 
 	/** Used to keep the init state of the class */
 	static private $_initialized = array();
@@ -42,6 +45,9 @@ abstract class Admin {
 			return; 
 		}
 		static::set_options( $options );
+		if ( static::HAS_SAVE_POST ) {
+			add_action( 'save_post', array( $static_instance, 'action_save_post' ) );
+		}
 		self::$_initialized[ $static_instance ] = true;
 	}
 	
@@ -76,6 +82,23 @@ abstract class Admin {
 	static public function get_options() {
 		$static_instance = get_called_class();
 		return self::$_options[ $static_instance ];
+	}
+
+	/**
+	 * WordPress action for saving the post
+	 * 
+	 * @return void No return value
+	 */
+	static public function action_save_post( $post_id ) {
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {  // Check user can edit
+			return; 
+		}
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )  {  // Check if is auto saving
+			return; 
+		}
+		if ( wp_is_post_revision( $post_id ) ) {  // Check if is revision
+			return; 
+		}
 	}
 
 }

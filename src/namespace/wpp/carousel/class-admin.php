@@ -22,13 +22,51 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  */
 class Admin extends \WPP\Carousel\Base\Admin {
 
+	/** Used to set if the class uses action_save_post */
+	const HAS_SAVE_POST = TRUE;
+
 	/**
 	 * Initialization point for the static class
 	 * 
 	 * @return void No return value
 	 */
-	static public function init() {
-		parent::init();
+	static public function init( $options = array() ) {
+		parent::init( wpp_array_merge_nested( 
+			array(
+				'cache_group' => '',
+				'content_type' => '',
+				'delete_cache_content_type_exception' => array(),
+			),
+			$options 
+		) );
 	}
 	
+
+	/**
+	 * WordPress action for saving the post
+	 * 
+	 * @return void No return value
+	 */
+	static public function action_save_post( $post_id ) {
+		parent::action_save_post( $post_id );
+		$post_content_type = get_post_type( $post_id );
+		$options = static::get_options();
+
+		// We need to flush the cache for any carousel
+		if ( ! in_array( $post_content_type, $options['delete_cache_content_type_exception'] ) ) {
+			wpp_debug( "Flushing cache for {$options['cache_group']}" );
+			$carousel_posts = new \WP_Query( array(
+				'post_type'      => $options['content_type'],
+				'post_status'    => 'any',
+				'nopaging'       => TRUE,
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			) );
+			$carousel_post_ids = ( empty( $carousel_posts->posts ) ? array() : $carousel_posts->posts );
+			foreach ( (array) $carousel_post_ids as $carousel_post_id ) {
+				wp_cache_delete( $carousel_post_id, $options['cache_group'] );
+			}
+		}
+	}
+
 }

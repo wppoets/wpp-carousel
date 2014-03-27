@@ -102,12 +102,15 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 
 	/** Used to keep the default slide array data */
 	static protected $_default_data = array(
-		'post_id' => 'false',
-		'image' => NULL,
-		'image_id' => 'false',
-		'title' => NULL,
-		'caption' => NULL,
-		'order_id'  => 0,
+		'slide_post_id' => 'false',
+		'slide_image_src' => '',
+		'slide_image_id' => 'false',
+		'slide_title_enabled' => FALSE,
+		'slide_title' => '',
+		'slide_caption_enabled' => FALSE,
+		'slide_caption' => '',
+		'slide_link_enabled' => FALSE,
+		'slide_link' => '',
 	);
 
 	/**
@@ -119,7 +122,7 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 				'post_type'      => static::POST_TYPE,
 				'post_status'    => 'publish',
 				'order'          => 'ASC',
-				'order_by'       => 'menu_order',
+				'orderby'       => 'menu_order',
 				'nopaging'       => TRUE,
 				'posts_per_page' => -1,
 			),
@@ -128,7 +131,8 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 		$slides = ( empty( $slides_query->posts ) ? array() : $slides_query->posts );
 		wp_reset_postdata();
 		foreach ( $slides as &$slide ) {
-			$slide->post_content_decode = json_decode( $slide->post_content, TRUE );
+			$slide->post_content_decoded = json_decode( $slide->post_content, TRUE );
+			$slide->post_content_decoded['slide_post_id'] = $slide->ID;
 		}
 		return $slides;
 	}
@@ -144,22 +148,21 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 		$insert_post_return = wp_insert_post( 
 			wpp_array_merge_nested(
 				array(
-					'ID'             => ('false' === $data[ 'post_id' ] ? NULL : $data[ 'post_id' ] ),
+					'ID'             => ('false' === $data[ 'slide_post_id' ] ? NULL : $data[ 'slide_post_id' ] ),
 					'post_content'   => json_encode( $data ),
 					'post_name'      => '',
-					'post_title'     => wp_strip_all_tags( ( empty( $data[ 'title' ] ) ? '' : $data[ 'title' ] ) ),
+					'post_title'     => wp_strip_all_tags( ( empty( $data[ 'slide_itle' ] ) ? '' : $data[ 'slide_title' ] ) ),
 					'post_status'    => 'publish',
 					'post_type'      => static::POST_TYPE,
-					'menu_order'     => ( empty( $data[ 'order_id' ] ) ? 0 : $data[ 'order_id' ] ),
-					'post_excerpt'   => ( empty( $data[ 'caption' ] ) ? '' : $data[ 'caption' ] ),
+					'post_excerpt'   => ( empty( $data[ 'slide_caption' ] ) ? '' : $data[ 'slide_caption' ] ),
 					'comment_status' => 'closed',
 				),
 				$options
 			),
 			TRUE
 		);
-		if ( ! is_wp_error( $insert_post_return ) && ! empty( $data[ 'image_id' ] ) && 'false' !== $data[ 'image_id' ] ) {
-			add_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'image_id' ]);
+		if ( ! is_wp_error( $insert_post_return ) && ! empty( $data[ 'slide_image_id' ] ) && 'false' !== $data[ 'slide_image_id' ] ) {
+			add_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ]);
 		}
 	}
 

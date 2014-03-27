@@ -30,12 +30,17 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 	/** Used to set the plugins ID */
 	const ID = 'wpp-carousel';
 
+	/** Used to set the plugins ID */
+	const CACHE_GROUP = self::ID;
+
 	/** Used to store the text domain */
 	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
 	
 	/** Used to enable shortcode function */	
 	const SHORTCODE_ENABLE = TRUE;
 	
+	static private $_slide_content_type = "\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type";
+
 	/** Default carousel options */
 	static private $_default_carousel_options = array(
 		'id' => '',
@@ -45,6 +50,10 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 
 	static private $_slide_tyes = array(
 		'static' => "\WPP\Carousel\Slide_Types\Static_Slide_Type",
+	);
+
+	static private $_view_tyes = array(
+		'bootstrap_3' => "\WPP\Carousel\View_Types\Bootstrap_3_View_Type",
 	);
 
 	/**
@@ -57,7 +66,15 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			'admin_controllers' => array( 
 				"\WPP\Carousel\Admin", 
 			),
-			'admin_controller_options' => array(),
+			'admin_controller_options' => array(
+				"\WPP\Carousel\Admin" => array(
+					'cache_group' => static::CACHE_GROUP,
+					'content_type' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
+					'delete_cache_content_type_exception' => array(
+						\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE,
+					),
+				),
+			),
 			'content_types' => array(
 				"\WPP\Carousel\Content_Types\Carousel_Content_Type",
 				"\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
@@ -72,6 +89,9 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box",
 			),
 			'meta_box_options' => array(
+				"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box" => array(
+					'view_types' => self::$_view_tyes,
+				),
 				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box" => array(
 					'data_content_type' => "\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
 					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
@@ -128,12 +148,42 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			trigger_error( __( 'Plugin not initialized.', static::TEXT_DOMAIN ), E_USER_NOTICE);
 			return;
 		}
-		$return_value = '';
 		$options = wpp_array_merge_options(
 			self::$_default_carousel_options,
 			$options
 		);
 		wpp_debug( $options );
+
+		$return_value = wp_cache_get( $options['id'], static::ID );
+		if ( $return_value !== FALSE ) {
+			wpp_debug( "{static::ID}:{$options['id']} - Return cached carousel" );
+			return $return_value;
+		}
+		wpp_debug( "{static::ID}:{$options['id']} - No cache avalable, must build" );
+		$return_value = '';
+
+		$slides = array();
+		$content_type = self::$_slide_content_type;
+		$raw_slides = $content_type::get_posts( array(
+			'post_parent' => $options['id'],
+		) );
+		foreach ( $raw_slides as &$raw_slide ) {
+			$raw_slide_type = NULL;
+			if ( ! empty( $raw_slide->post_content_decoded['slide_type'] ) && ! empty( self::$_slide_tyes[ $raw_slide->post_content_decoded['slide_type'] ] ) ) {
+				$raw_slide_type = self::$_slide_tyes[ $raw_slide->post_content_decoded['slide_type'] ];
+			}
+			if ( ! empty( $raw_slide_type ) && class_exists( $raw_slide_type ) && method_exists( $raw_slide_type, 'get_slides' ) ) {
+				$new_slides = $raw_slide_type::get_slides( $raw_slide );
+				$slides = array_merge( $slides, $new_slides);
+			}
+		}
+		$return_value = \WPP\Carousel\View_Types\Bootstrap_3_View_Type::get_carousel_view( array( 
+			'slides' => $slides,
+			'show_controls' => TRUE,
+			'show_indicators' => TRUE,
+		) );
+		wpp_debug( $return_value );
+		
 		return $return_value;
 	}
 }
