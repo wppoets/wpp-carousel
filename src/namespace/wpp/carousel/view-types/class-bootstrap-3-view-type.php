@@ -51,7 +51,7 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 		} else {
 			$options['carousel_class'] = ' ' . ltrim( $options['carousel_class'] );
 		}
-		return '<div id="#' . $options['carousel_id'] . '" class="carousel slide' . $options['carousel_class'] . '" data-ride="carousel">';
+		return '<div id="' . $options['carousel_id'] . '" class="carousel slide' . $options['carousel_class'] . '" data-ride="carousel">';
 	}
 	static public function get_indicators( &$options ) {
 		$return_string = '';
