@@ -40,7 +40,6 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 		$carousel_view .= static::get_controls( $options );
 		$carousel_view .= static::get_carousel_stop( $options );
 		$carousel_view .= static::get_carousel_script( $options );
-		wpp_debug($carousel_view);
 		return $carousel_view;
 	}
 	static public function get_carousel_start( &$options ) {

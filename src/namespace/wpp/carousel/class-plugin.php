@@ -91,6 +91,7 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			),
 			'meta_box_options' => array(
 				"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box" => array(
+					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
 					'view_types' => self::$_view_tyes,
 				),
 				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box" => array(
@@ -153,8 +154,6 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 			self::$_default_carousel_options,
 			$options
 		);
-		wpp_debug( $options );
-
 		$return_value = wp_cache_get( $options['id'], static::ID );
 		if ( $return_value !== FALSE ) {
 			wpp_debug( "{static::ID}:{$options['id']} - Return cached carousel" );

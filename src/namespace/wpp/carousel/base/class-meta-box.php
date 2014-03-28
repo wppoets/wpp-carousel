@@ -135,12 +135,12 @@ abstract class Meta_Box {
 		}
 		self::$_options[ $static_instance ] = wpp_array_merge_nested(
 			array( //Default options
-				'include_post_types' => explode( ',', static::INCLUDE_POST_TYPES ),
-				'exclude_post_types' => explode( ',', static::EXCLUDE_POST_TYPES ),
+				'include_post_types' => static::INCLUDE_POST_TYPES == '' ? array() : explode( ',', static::INCLUDE_POST_TYPES),
+				'exclude_post_types' => static::EXCLUDE_POST_TYPES == '' ? array() : explode( ',', static::EXCLUDE_POST_TYPES),
 				'all_post_types' => static::ENABLE_ALL_POST_TYPES,
 				'context' => static::CONTEXT,
 				'priority' => static::PRIORITY,
-				'callback_args' => explode( ',', static::CALLBACK_ARGS ),
+				'callback_args' => static::CALLBACK_ARGS == '' ? array() : explode( ',', static::CALLBACK_ARGS, -1 ),
 			),
 			( $merge ) ? self::$_options[ $static_instance ] : array(), //if merge, merge the excisting values
 			(array) $options //Added options
