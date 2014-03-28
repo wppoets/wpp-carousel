@@ -26,7 +26,7 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	const ID = 'wpp-carousel-meta-box';
 
 	/** Used to store the meta-box title */
-	const TITLE = 'Carousel Details';
+	const TITLE = 'Settings';
 
 	/** Used to store the plugin file location */
 	const PLUGIN_FILE = WPP_CAROUSEL_PLUGIN_FILE;
@@ -50,7 +50,7 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	//const ENABLE_ALL_POST_TYPES = FALSE;
 
 	/** Used to store waht context the meta-box should be located */
-	const CONTEXT = 'normal'; //('normal', 'advanced', or 'side')
+	const CONTEXT = 'side'; //('normal', 'advanced', or 'side')
 
 	/** Used to store what priority the meta-box should have */
 	const PRIORITY = 'core'; //('high', 'core', 'default' or 'low')

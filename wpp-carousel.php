@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WPP Carousel
+ * Plugin Name: WPP Carousel of Slides
  * Plugin URI: http://wppoets.com/plugins/carousel.html
- * Description: TODO...
+ * Description: Adds a carousel content type to your WordPress installation. With an easy to use interface you can add a slides to a carousel for displaying on your website.
  * Version: 0.9.0
  * Author: WP Poets <plugins@wppoets.com>
  * Author URI: http://wppoets.com

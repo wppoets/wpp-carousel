@@ -1,3 +1,6 @@
+#wpp-carousel-slide-meta-box > div.handlediv {
+  display: none; }
+
 #wpp-carousel-slide-table {
   width: 100%; }
   #wpp-carousel-slide-table tbody td {

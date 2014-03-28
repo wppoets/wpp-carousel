@@ -26,7 +26,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	const ID = 'wpp-carousel-slide-meta-box';
 
 	/** Used to store the meta-box title */
-	const TITLE = 'Carousel Slides';
+	const TITLE = 'Slides';
 
 	/** Used to store the plugin file location */
 	const PLUGIN_FILE = WPP_CAROUSEL_PLUGIN_FILE;

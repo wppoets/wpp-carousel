@@ -6,3 +6,19 @@
 #wppca_metabox{
 	display:none;
 }
+#wpp-carousel-meta-box {
+	& > div.handlediv {
+		display:none;
+	}
+	#publish {
+		//height: 25px;
+		//line-height: 28px;
+	}
+	#publishing-action {
+		//margin-top: -3px;
+		//margin-right: -5px;
+	}
+}
+#submitdiv {
+	display:none;
+}
