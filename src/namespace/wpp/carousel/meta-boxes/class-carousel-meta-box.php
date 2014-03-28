@@ -71,7 +71,7 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	const HTML_ID_PREFIX = 'wpp-carousel-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
-	const METADATA_KEY_PREFIX = '_wpp_carousel';
+	const METADATA_KEY_PREFIX = '_wpp_carousel_';
 
 	///** Used to enable ajax callbacks */
 	//const ENABLE_AJAX = FALSE;
@@ -88,6 +88,23 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	///** Used to enable the admin footer */
 	//const ENABLE_ADMIN_FOOTER = FALSE;
 
+	/** Used to enable the admin footer */
+	const ENABLE_SINGLE_SAVE_POST = TRUE;
+
+	/**
+	 * Initialization point for the static class
+	 *
+	 * @return void No return value
+	 */
+	static public function init( $options = array() ) {
+		parent::init( wpp_array_merge_nested(
+			array(
+				'view_types' => array(),
+				'metadata_key_data' => '',
+			),
+			$options
+		) );
+	}
 	/**
 	 * WordPress action for displaying the meta-box
 	 *
@@ -98,35 +115,26 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	 */
 	static public function action_meta_box_display( $post, $callback_args ) {
 		parent::action_meta_box_display( $post, $callback_args );
+		$options = static::get_options();
+		$form_data = array();
+		if ( ! empty( $options[ 'metadata_key_data' ] ) ) {
+			$form_data = json_decode( get_post_meta( $post->ID, $options[ 'metadata_key_data' ], TRUE ), TRUE );
+		}
 		$field_counter = 0;
 		?>
 		<p>
+			<input class="<?php echo self::HTML_CLASS_PREFIX; ?>field-view-type" type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[view_type]" value="bootstrap_3">
 			<div class="wpp-carousel-field-block">
-				<h4>Template Backend:</h4>
-				<input type="radio" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID; ?>_options['backend']" value="bootstrap_3" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Bootstrap 3 <em>(you must make sure the bootstrap css and js are loaded or things will not work)</em></label><br />
-			</div>
+				<label for="<?php echo static::ID . '-field-id-' . ++$field_counter; ?>">Carousel ID: <em>(must be unique to the page)</em></label><br />
+				<input type="text" id="<?php echo static::ID . '-field-id-' . $field_counter; ?>" name="<?php echo static::HTML_FORM_PREFIX; ?>[carousel_id]" value="<?php echo ( empty( $form_data['carousel_id'] ) ? '' : $form_data['carousel_id'] ); ?>" /><br />
+			</div>			
 			<div class="wpp-carousel-field-block">
-				<h4>Display As:</h4>
-				<input type="radio" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID; ?>_options['display']" value="i" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Individual Slides <em>(this options will display only one slide at a time)</em></label><br />
-				<input type="radio" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID . '_options'; ?>['display']" value="m" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Multiple Slides <em>(this options will display multiple slides at a time)</em></label><br />
+				<label for="<?php echo static::ID . '-field-id-' . ++$field_counter; ?>">Carousel Timer: <em>(time in milliseconds)</em></label><br />
+				<input type="text" id="<?php echo static::ID . '-field-id-' . $field_counter; ?>" name="<?php echo static::HTML_FORM_PREFIX; ?>[carousel_timer]" value="<?php echo ( empty( $form_data['carousel_timer'] ) ? '5000': $form_data['carousel_timer'] ); ?>" /><br />
 			</div>
-			<div class="wpp-carousel-field-block">
-				<h4>Container Specifications:</h4>
-				<input type="textbox" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID; ?>_options['container_width']" value="" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Width <em>(number value in pixels, percent, or empty for auto)</em></label><br />
-				<input type="textbox" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID . '_options'; ?>['container_height']" value="" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Height <em>(number value in pixels, percent, or empty for auto)</em></label><br />
-			</div>
-			<div class="wpp-carousel-field-block">
-				<h4>Slide Specifications:</h4>
-				<input type="textbox" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID; ?>_options['slide_width']" value="" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Width <em>(number value in pixels, percent, or empty for auto)</em></label><br />
-				<input type="textbox" id="<?php echo static::ID . '-field-' . ++$field_counter; ?>" name="<?php echo static::ID . '_options'; ?>['slide_height']" value="" />
-				<label for="<?php echo static::ID . '-field-' . $field_counter; ?>">Height <em>(number value in pixels, percent, or empty for auto)</em></label><br />
-			</div>
+		</p>
+		<p>
+			<em>** At this time the only view type available is Bootstrap 3 **</em>
 		</p>
 		<?php
 	}
@@ -137,7 +145,16 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	 * @return void No return value
 	 */
 	static public function action_save_post( $post_id ) {
-		parent::action_save_post( $post_id );
+		if ( ! parent::action_save_post( $post_id ) ) {
+			return;
+		}
+		$options = static::get_options();
+		if ( ! empty( $options[ 'metadata_key_data' ] ) ) {
+			$form_data = filter_input( INPUT_POST, static::HTML_FORM_PREFIX, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
+			$form_data_encoded = json_encode( $form_data );
+			add_post_meta( $post_id, $options[ 'metadata_key_data' ], $form_data_encoded, TRUE ) || update_post_meta( $post_id, $options[ 'metadata_key_data' ], $form_data_encoded );
+			unset( $form_data, $form_data_encoded);
+		}
 	}
 
 }

@@ -116,4 +116,42 @@ class Carousel_Content_Type extends \WPP\Carousel\Base\Content_Type {
 		) );
 	}
 
+	/**
+	 * Method for inserting/updating post
+	 */
+	static public function insert_post( $post, $wp_error = FALSE ) {
+		return parent::insert_post( $post, $wp_error );
+	}
+
+	/**
+	 * Method for deleting data
+	 */
+	static public function delete_post( $post_id, $force_delete = FALSE ) {
+		return parent::delete_post( $post_id, $force_delete );
+	}
+
+	/**
+	 * Method for getting the post
+	 */
+	static public function get_post( $id, $output = 'OBJECT', $filter = 'raw' ) {
+		$post = parent::get_post( $id, $output, $filter );
+		$options = static::get_options();
+		if ( empty( $post ) || empty( $options[ 'metadata_key_data' ] ) ) {
+			return $post;
+		}
+		if ( 'OBJECT' === $output ) {
+			$post->carousel_data = json_decode( get_post_meta( $post->ID, $options[ 'metadata_key_data' ], TRUE ), TRUE );
+		} else if ( 'ARRAY_A' === $output ) {
+			$post[ 'carousel_data' ] = json_decode( get_post_meta( $post[ 'ID' ], $options[ 'metadata_key_data' ], TRUE ), TRUE );
+		}
+		return $post;
+	}
+
+	/**
+	 * Method for getting multiple posts
+	 */
+	static public function get_posts( $args ) {
+		return parent::get_posts( $args );
+	}
+
 }

@@ -71,7 +71,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	const HTML_ID_PREFIX = 'wpp-carousel-slide-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
-	const METADATA_KEY_PREFIX = '_wpp_carousel_slide';
+	const METADATA_KEY_PREFIX = '_wpp_carousel_slide_';
 
 	///** Used to enable ajax callbacks */
 	//const ENABLE_AJAX = FALSE;
@@ -88,6 +88,9 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	/** Used to enable the admin footer */
 	const ENABLE_ADMIN_FOOTER = TRUE;
 
+	/** Used to enable the admin footer */
+	const ENABLE_SINGLE_SAVE_POST = TRUE;
+
 	/**
 	 * Initialization point for the static class
 	 *
@@ -96,7 +99,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	static public function init( $options = array() ) {
 		parent::init( wpp_array_merge_nested(
 			array(
-				'data_content_type'   => '',
+				'slide_content_type'   => '',
 				'slide_types' => array(),
 			),
 			$options
@@ -115,10 +118,10 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 		parent::action_meta_box_display( $post, $callback_args );
 		$empty_message = __( 'Nothing to display, you have no slides.', static::TEXT_DOMAIN );
 		$options = parent::get_options();
-		$data_content_type = $options['data_content_type'];
+		$slide_content_type = $options['slide_content_type'];
 		$carousel_slides = array();
-		if ( ! empty( $data_content_type ) && class_exists( $data_content_type ) && method_exists( $data_content_type, 'get_posts' ) ) {
-			$carousel_slides = $data_content_type::get_posts( array(
+		if ( ! empty( $slide_content_type ) && class_exists( $slide_content_type ) && method_exists( $slide_content_type, 'get_posts' ) ) {
+			$carousel_slides = $slide_content_type::get_posts( array(
 				'post_parent' => $post->ID,
 			) );
 		}
@@ -255,10 +258,12 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	 * @return void No return value
 	 */
 	static public function action_save_post( $post_id ) {
-		parent::action_save_post( $post_id );
+		if ( ! parent::action_save_post( $post_id ) ) {
+			return;
+		}
 		$options = parent::get_options();
-		$data_content_type = $options['data_content_type'];
-		if ( empty( $data_content_type ) && class_exists( $data_content_type ) && method_exists( $data_content_type, 'save_post' ) && method_exists( $data_content_type, 'delete_post' ) ) {
+		$slide_content_type = $options['slide_content_type'];
+		if ( empty( $slide_content_type ) && class_exists( $slide_content_type ) && method_exists( $slide_content_type, 'save_post' ) && method_exists( $slide_content_type, 'delete_post' ) ) {
 			return;
 		}
 		$post_order = -1000; //The default is 0 so just in the off chance we have other posts we want to use our order first
@@ -274,13 +279,15 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			}
 			$active_row = &$form_data[ 'rows' ][ $row_id ];
 			if ( 'false' === $active_row[ 'slide_removed' ] ) { // removed is set to 'false'
-				$insert_post_return = $data_content_type::save_post( $active_row, array(
+				$slide_post = array(
+					'post_content_decoded' => $active_row,
 					'post_parent' => $post_id,
 					'menu_order'  => $post_order++,
-				) );
+				);
+				$insert_post_return = $slide_content_type::insert_post( $slide_post );
 				unset( $insert_post_return );
 			} elseif ( 'true' === $active_row[ 'slide_removed' ] && 'false' !== $active_row[ 'slide_post_id' ] ) { // removed is set to 'true' and post_id is not set to 'false'
-				$data_content_type::delete_post( $active_row[ 'slide_post_id' ] );
+				$slide_content_type::delete_post( $active_row[ 'slide_post_id' ] );
 			}
 		}
 		add_action( 'save_post', array( $static_instance, 'action_save_post' ) );

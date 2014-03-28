@@ -18,7 +18,7 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.3
+ * @version 1.0.4
  */
 abstract class Meta_Box {
 
@@ -71,7 +71,7 @@ abstract class Meta_Box {
 	const HTML_ID_PREFIX = 'wpp-meta-box-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
-	const METADATA_KEY_PREFIX = '_wpp_meta_box';
+	const METADATA_KEY_PREFIX = '_wpp_meta_box_';
 
 	/** Used to enable ajax callbacks */
 	const ENABLE_AJAX = FALSE;
@@ -88,11 +88,17 @@ abstract class Meta_Box {
 	/** Used to enable the admin footer */
 	const ENABLE_ADMIN_FOOTER = FALSE;
 
+	/** Used to enable the admin footer */
+	const ENABLE_SINGLE_SAVE_POST = FALSE;
+
 	/** Used to store the initialization of the class */
 	static private $_initialized = array();
 
 	/** Used to store the options */
 	static private $_options = array();
+
+	/** Used to store if save_post has run before */
+	static private $_save_post = array();
 	
 	/**
 	 * Initialization point for the static class
@@ -117,7 +123,7 @@ abstract class Meta_Box {
 			add_action( $action_hook, array( $static_instance, 'action_wp_ajax' ) );
 			unset( $action_hook );
 		}
-		self::$_initialized[ $static_instance ] = true;
+		self::$_initialized[ $static_instance ] = TRUE;
 	}
 
 	/**
@@ -277,6 +283,19 @@ abstract class Meta_Box {
 		if ( ! wp_verify_nonce( filter_input( INPUT_POST, static::HTML_FORM_PREFIX . '_wpnonce', FILTER_SANITIZE_STRING ), static::NONCE_ACTION ) ) {  // Verify wpnonce
 			return; 
 		}
+		if ( static::ENABLE_SINGLE_SAVE_POST ) {
+			$static_instance = get_called_class();
+			if ( ! empty( self::$_save_post[ $static_instance ] ) ) { 
+				return; 
+			}
+			self::$_save_post[ $static_instance ] = TRUE;
+		}
+		return TRUE;
+
+		// Example usage
+		//if ( ! parent::action_save_post( $post_id ) ) {
+		//	return;
+		//}
 	}
 
 	/**

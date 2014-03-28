@@ -86,7 +86,7 @@ if ( ! function_exists( 'wpp_array_merge_nested' ) ) {
  * @param array $default_options The base options, anything not in this array will not be set
  * @param array $options The options to be set
  * @return array The completed options array
- * @version 1.0.0
+ * @version 1.0.1
  */
 if ( ! function_exists( 'wpp_array_merge_options' ) ) {
 	function wpp_array_merge_options( $default_options, $options ) {
@@ -95,7 +95,7 @@ if ( ! function_exists( 'wpp_array_merge_options' ) ) {
 			if ( array_key_exists( $name, $options ) ) {
 				$return_options[ $name ] = $options[ $name ];
 			} else {
-				$return_options[ $name ] = $default;
+				$return_options[ $name ] = $value;
 			}
 		}
 		return $return_options;

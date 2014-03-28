@@ -129,7 +129,7 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 			$return_string .= '+function ($) {';
 				$return_string .= '$(document).ready(function() {';
 					$return_string .= '$("#' . $options['carousel_id'] . '").carousel({';
-						$return_string .= 'interval: 5000,';
+						$return_string .= 'interval: ' . ( empty( $options['carousel_timer'] ) ? '5000' : $options['carousel_timer'] ) . ',';
 					$return_string .= '});';
 				$return_string .= '});';
 			$return_string .= '}(jQuery);';

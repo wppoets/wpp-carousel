@@ -114,22 +114,20 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 	);
 
 	/**
-	 * 
+	 * Method for getting multiple posts
 	 */
-	static public function get_posts( $options ) {
-		$slides_query = new \WP_Query( wpp_array_merge_nested ( 
+	static public function get_posts( $args ) {
+		$slides = parent::get_posts( wpp_array_merge_nested ( 
 			array( 
 				'post_type'      => static::POST_TYPE,
 				'post_status'    => 'publish',
 				'order'          => 'ASC',
-				'orderby'       => 'menu_order',
+				'orderby'        => 'menu_order',
 				'nopaging'       => TRUE,
 				'posts_per_page' => -1,
 			),
-			$options
+			$args
 		) );
-		$slides = ( empty( $slides_query->posts ) ? array() : $slides_query->posts );
-		wp_reset_postdata();
 		foreach ( $slides as &$slide ) {
 			$slide->post_content_decoded = json_decode( $slide->post_content, TRUE );
 			$slide->post_content_decoded['slide_post_id'] = $slide->ID;
@@ -138,39 +136,71 @@ class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
 	}
 
 	/**
-	 * 
+	 * Method for getting the post
 	 */
-	static public function save_post( $data, $options ) {
-		$data = wpp_array_merge_nested(
+	static public function get_post( $id, $output = 'OBJECT', $filter = 'raw' ) {
+		$slide = parent::get_post( $id, $output, $filter );
+		if ( empty( $slide ) ) {
+			return $slide;
+		}
+		if ( 'OBJECT' === $output ) {
+			$slide->post_content_decoded = json_decode( $slide->post_content, TRUE );
+			$slide->post_content_decoded['slide_post_id'] = $slide->ID;
+		} else if ( 'ARRAY_A' === $output ) {
+			$slide[ 'post_content_decoded' ] = json_decode( $slide[ 'post_content' ], TRUE );
+			$slide[ 'post_content_decoded' ]['slide_post_id'] = $slide[ 'ID' ];
+		}
+		return $slide;
+	}
+
+	/**
+	 * Method for inserting/updating post
+	 */
+	static public function insert_post( $post, $wp_error = FALSE ) {
+		$meta_box_options = static::get_options();
+		! empty( $post['post_content_decoded'] ) or $post['post_content_decoded'] = array();
+		$post['post_content_decoded'] = wpp_array_merge_nested(
 			static::$_default_data,
-			$data
+			$post['post_content_decoded']
 		);
-		$insert_post_return = wp_insert_post( 
+		$data = &$post['post_content_decoded'];
+		$insert_post_return = parent::insert_post( 
 			wpp_array_merge_nested(
 				array(
 					'ID'             => ('false' === $data[ 'slide_post_id' ] ? NULL : $data[ 'slide_post_id' ] ),
 					'post_content'   => json_encode( $data ),
 					'post_name'      => '',
-					'post_title'     => wp_strip_all_tags( ( empty( $data[ 'slide_itle' ] ) ? '' : $data[ 'slide_title' ] ) ),
+					'post_title'     => wp_strip_all_tags( ( empty( $data[ 'slide_title' ] ) ? '' : $data[ 'slide_title' ] ) ),
 					'post_status'    => 'publish',
 					'post_type'      => static::POST_TYPE,
 					'post_excerpt'   => ( empty( $data[ 'slide_caption' ] ) ? '' : $data[ 'slide_caption' ] ),
 					'comment_status' => 'closed',
 				),
-				$options
+				$post
 			),
 			TRUE
 		);
 		if ( ! is_wp_error( $insert_post_return ) && ! empty( $data[ 'slide_image_id' ] ) && 'false' !== $data[ 'slide_image_id' ] ) {
-			add_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ]);
+			add_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ], TRUE ) || update_post_meta( $insert_post_return, '_thumbnail_id', $data[ 'slide_image_id' ] );
+		}
+		if ( ! is_wp_error( $insert_post_return ) && ! empty( $data[ 'slide_type' ] ) && ! empty( $meta_box_options['metadata_key_slide_type'] ) ) {
+			add_post_meta( $insert_post_return, $meta_box_options['metadata_key_slide_type'], $data[ 'slide_type' ], TRUE ) || update_post_meta( $insert_post_return, $meta_box_options['metadata_key_slide_type'], $data[ 'slide_type' ] );
+		}
+
+		if ( $wp_error ) {
+			return $insert_post_return;
+		} else if ( ! is_wp_error( $insert_post_return ) ) {
+			return $insert_post_return;
+		} else {
+			return FALSE;
 		}
 	}
 
 	/**
-	 * 
+	 * Method for deleting data
 	 */
-	static public function delete_post( $post_id, $options = array() ) {
-		wp_delete_post( $post_id, TRUE );
+	static public function delete_post( $post_id, $force_delete = TRUE ) {
+		return parent::delete_post( $post_id, $force_delete );
 	}
 
 }

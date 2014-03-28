@@ -49,4 +49,4 @@ require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-a
 require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-helper.php' );
 
 //Make the magic happen!
-WPP\Carousel\Plugin::init();
+\WPP\Carousel\Plugin::init();

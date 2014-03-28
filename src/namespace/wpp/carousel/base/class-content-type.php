@@ -18,7 +18,7 @@
  */
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  */
 abstract class Content_Type {
 
@@ -280,6 +280,39 @@ abstract class Content_Type {
 		$num = number_format_i18n( $num_posts->publish );
 		$text = _n( $labels['singular_name'], $labels['name'], intval( $num_posts->publish ) );
 		print( '<li class="page-count ' . $post_type_info->name. '-count"><a href="edit.php?post_type=' . static::POST_TYPE . '">' . $num . ' ' . $text . '</a></li>' );
+	}
+
+	/**
+	 * Method for inserting/updating post
+	 */
+	static public function insert_post( $post, $wp_error = FALSE ) {
+		$post[ 'post_type' ] = static::POST_TYPE;
+		return wp_insert_post( $post, $wp_error );
+	}
+
+	/**
+	 * Method for deleting data
+	 */
+	static public function delete_post( $post_id, $force_delete = FALSE ) {
+		return wp_delete_post( $post_id, $force_delete );
+	}
+
+	/**
+	 * Method for getting the post
+	 */
+	static public function get_post( $id, $output = 'OBJECT', $filter = 'raw' ) {
+		return get_post( $id, $output, $filter );
+	}
+
+	/**
+	 * Method for getting multiple posts
+	 */
+	static public function get_posts( $args ) {
+		$args[ 'post_type' ] = static::POST_TYPE;
+		$posts_query = new \WP_Query( $args );
+		$posts = ( empty( $posts_query->posts ) ? array() : $posts_query->posts );
+		wp_reset_postdata();
+		return $posts;
 	}
 
 }
