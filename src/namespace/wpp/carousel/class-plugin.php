@@ -46,6 +46,7 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 		'id' => '',
 		'title' => '',
 		'slug' => '',
+		'carousel_id' => '',
 	);
 
 	static private $_slide_tyes = array(
@@ -179,8 +180,8 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 		}
 		$return_value = \WPP\Carousel\View_Types\Bootstrap_3_View_Type::get_carousel_view( array( 
 			'slides' => $slides,
+			'carousel_id' => $options[ 'carousel_id' ],
 			'show_controls' => TRUE,
-			'show_indicators' => TRUE,
 		) );
 		wpp_debug( $return_value );
 		

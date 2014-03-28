@@ -62,7 +62,7 @@ class Carousel_Content_Type extends \WPP\Carousel\Base\Content_Type {
 	//const MENU_POSITION = NULL;
 
 	/** Used by register_post_type args */
-	//const MENU_ICON = NULL;
+	const MENU_ICON = 'dashicons-images-alt2';
 
 	///** Used by register_post_type args */
 	//const CAPABILITY_TYPE = 'post';

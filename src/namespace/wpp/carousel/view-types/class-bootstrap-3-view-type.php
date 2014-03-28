@@ -27,11 +27,11 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 		$carousel_view .= static::get_indicators( $options );
 		if ( ! empty( $options['slides'] ) ) {
 			$carousel_view .= static::get_items_start( $options );
-			foreach ( $options['slides'] as &$slide ) {
+			foreach ( $options['slides'] as $slide_key => &$slide ) {
 				if ( empty( $slide['image'] ) ) {
 					continue;
 				}
-				$carousel_view .= static::get_item_start( $options );
+				$carousel_view .= static::get_item_start( $options, ($slide_key === 0 ? TRUE : FALSE ) );
 				$carousel_view .= static::get_item( $slide, $options );
 				$carousel_view .= static::get_item_stop( $options );
 			}
@@ -39,6 +39,7 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 		}
 		$carousel_view .= static::get_controls( $options );
 		$carousel_view .= static::get_carousel_stop( $options );
+		$carousel_view .= static::get_carousel_script( $options );
 		wpp_debug($carousel_view);
 		return $carousel_view;
 	}
@@ -75,8 +76,8 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 	static public function get_items_start( &$options ) {
 		return '<div class="carousel-inner">';
 	}
-	static public function get_item_start( &$options ) {
-		return '<div class="item">';
+	static public function get_item_start( &$options, $active = FALSE ) {
+		return '<div class="item' . ( $active  ? ' active' : '' ) . '">';
 	}
 	static public function get_item( &$slide, &$options ) {
 		$return_string = '';
@@ -123,4 +124,20 @@ class Bootstrap_3_View_Type extends Base_View_Type {
 	static public function get_carousel_stop( &$options ) {
 		return '</div>';
 	}
+	static public function get_carousel_script( &$options ) {
+		$return_string = '';
+		$return_string .= '<script>';
+			$return_string .= '+function ($) {';
+				$return_string .= '$(document).ready(function() {';
+					$return_string .= '$("#' . $options['carousel_id'] . '").carousel({';
+						$return_string .= 'interval: 5000,';
+					$return_string .= '});';
+				$return_string .= '});';
+			$return_string .= '}(jQuery);';
+		$return_string .= '</script>';
+		$return_string .= '';
+		return $return_string;
+	}
+
+				
 }
