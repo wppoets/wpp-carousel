@@ -25,6 +25,9 @@ abstract class Admin {
 	/** Used to set if the class uses action_save_post */
 	const HAS_SAVE_POST = FALSE;
 
+	/** Used to enable the admin footer */
+	const ENABLE_SINGLE_SAVE_POST = FALSE;
+
 	/** Used to keep the init state of the class */
 	static private $_initialized = array();
 	
@@ -34,6 +37,8 @@ abstract class Admin {
 	/** Used to store the plugin settings */
 	static private $_settings = array();
 
+	/** Used to store if save_post has run before */
+	static private $_save_post = array();
 	/**
 	 * Initialization point for the static class
 	 * 
@@ -99,6 +104,19 @@ abstract class Admin {
 		if ( wp_is_post_revision( $post_id ) ) {  // Check if is revision
 			return; 
 		}
+		if ( static::ENABLE_SINGLE_SAVE_POST ) {
+			$static_instance = get_called_class();
+			if ( ! empty( self::$_save_post[ $static_instance ] ) ) { 
+				return; 
+			}
+			self::$_save_post[ $static_instance ] = TRUE;
+		}
+		return TRUE;
+
+		// Example usage
+		//if ( ! parent::action_save_post( $post_id ) ) {
+		//	return;
+		//}
 	}
 
 }

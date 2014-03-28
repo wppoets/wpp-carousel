@@ -48,7 +48,9 @@ class Admin extends \WPP\Carousel\Base\Admin {
 	 * @return void No return value
 	 */
 	static public function action_save_post( $post_id ) {
-		parent::action_save_post( $post_id );
+		if ( ! parent::action_save_post( $post_id ) ) {
+			return;
+		}
 		$post_content_type = get_post_type( $post_id );
 		$options = static::get_options();
 
