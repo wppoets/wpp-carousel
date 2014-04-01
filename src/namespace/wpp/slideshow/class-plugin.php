@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel;
+<?php namespace WPP\Slideshow;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * Starting point for the plugin
  * 
@@ -25,31 +25,31 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * 
  */
-class Plugin extends \WPP\Carousel\Base\Plugin {
+class Plugin extends \WPP\Slideshow\Base\Plugin {
 	
 	/** Used to set the plugins ID */
-	const ID = 'wpp-carousel';
+	const ID = 'wpp-slideshow';
 
 	/** Used to set the plugins ID */
 	const CACHE_GROUP = self::ID;
 
 	/** Used to store the text domain */
-	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const TEXT_DOMAIN = WPP_SLIDESHOW_TEXT_DOMAIN;
 	
 	/** Used to enable shortcode function */	
 	const SHORTCODE_ENABLE = TRUE;
 
 	/** Used to store the metadata key prefix **/
-	const METADATA_KEY_PREFIX = '_wpp_carousel_';
+	const METADATA_KEY_PREFIX = '_wpp_slideshow_';
 
 	/** Used to store the slide_type metadata key **/
-	const METADATA_KEY_SLIDE_TYPE = '_wpp_carousel_slide_type';
+	const METADATA_KEY_SLIDE_TYPE = '_wpp_slideshow_slide_type';
 
 	/** Used to store the carousel data metadata key **/
-	const METADATA_KEY_CAROUSEL_DATA = '_wpp_carousel_data';
+	const METADATA_KEY_CAROUSEL_DATA = '_wpp_slideshow_data';
 	
-	static private $_slide_content_type = "\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type";
-	static private $_carousel_content_type = "\WPP\Carousel\Content_Types\Carousel_Content_Type";
+	static private $_slide_content_type = "\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type";
+	static private $_carousel_content_type = "\WPP\Slideshow\Content_Types\Slideshow_Content_Type";
 
 	/** Default carousel options */
 	static private $_default_carousel_options = array(
@@ -60,11 +60,11 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 	);
 
 	static private $_slide_tyes = array(
-		'static' => "\WPP\Carousel\Slide_Types\Static_Slide_Type",
+		'static' => "\WPP\Slideshow\Slide_Types\Static_Image_Slide_Type",
 	);
 
 	static private $_view_tyes = array(
-		'bootstrap_3' => "\WPP\Carousel\View_Types\Bootstrap_3_View_Type",
+		'bootstrap_3' => "\WPP\Slideshow\View_Types\Bootstrap_3_View_Type",
 	);
 
 	/**
@@ -75,43 +75,43 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 	static public function init() {
 		parent::init( array(
 			'admin_controllers' => array( 
-				"\WPP\Carousel\Admin", 
+				"\WPP\Slideshow\Admin", 
 			),
 			'admin_controller_options' => array(
-				"\WPP\Carousel\Admin" => array(
+				"\WPP\Slideshow\Admin" => array(
 					'cache_group' => static::CACHE_GROUP,
-					'content_type' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
+					'content_type' => \WPP\Slideshow\Content_Types\Slideshow_Content_Type::POST_TYPE,
 					'delete_cache_content_type_exception' => array(
-						\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type::POST_TYPE,
+						\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type::POST_TYPE,
 					),
 				),
 			),
 			'content_types' => array(
-				"\WPP\Carousel\Content_Types\Carousel_Content_Type",
-				"\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
+				"\WPP\Slideshow\Content_Types\Slideshow_Content_Type",
+				"\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type",
 			),
 			'content_type_options' => array(
-				"\WPP\Carousel\Content_Types\Carousel_Content_Type" => array(
+				"\WPP\Slideshow\Content_Types\Slideshow_Content_Type" => array(
 					'slide_types' => self::$_slide_tyes,
 					'metadata_key_data' => static::METADATA_KEY_SLIDE_TYPE,
 				),
-				"\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type" => array(
+				"\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type" => array(
 					'metadata_key_slide_type' => static::METADATA_KEY_SLIDE_TYPE,
 				),
 			),
 			'meta_boxes' => array(
-				"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box",
-				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box",
+				"\WPP\Slideshow\Meta_Boxes\Slideshow_Settings_Meta_Box",
+				"\WPP\Slideshow\Meta_Boxes\Slideshow_Slides_Meta_Box",
 			),
 			'meta_box_options' => array(
-				"\WPP\Carousel\Meta_Boxes\Carousel_Meta_Box" => array(
-					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
+				"\WPP\Slideshow\Meta_Boxes\Slideshow_Settings_Meta_Box" => array(
+					'include_post_types' => \WPP\Slideshow\Content_Types\Slideshow_Content_Type::POST_TYPE,
 					'view_types' => self::$_view_tyes,
 					'metadata_key_data' => static::METADATA_KEY_SLIDE_TYPE,
 				),
-				"\WPP\Carousel\Meta_Boxes\Carousel_Slide_Meta_Box" => array(
-					'slide_content_type' => "\WPP\Carousel\Content_Types\Carousel_Slide_Content_Type",
-					'include_post_types' => \WPP\Carousel\Content_Types\Carousel_Content_Type::POST_TYPE,
+				"\WPP\Slideshow\Meta_Boxes\Slideshow_Slides_Meta_Box" => array(
+					'slide_content_type' => "\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type",
+					'include_post_types' => \WPP\Slideshow\Content_Types\Slideshow_Content_Type::POST_TYPE,
 					'slide_types' => self::$_slide_tyes,
 				),
 			),
@@ -202,7 +202,7 @@ class Plugin extends \WPP\Carousel\Base\Plugin {
 				$slides = array_merge( $slides, $new_slides);
 			}
 		}
-		$return_value = \WPP\Carousel\View_Types\Bootstrap_3_View_Type::get_carousel_view( array( 
+		$return_value = \WPP\Slideshow\View_Types\Bootstrap_3_View_Type::get_carousel_view( array( 
 			'slides' => $slides,
 			'carousel_id' => ( empty( $carousel->carousel_data['carousel_id'] ) ? '' : $carousel->carousel_data['carousel_id'] ),
 			'carousel_timer' => ( empty( $carousel->carousel_data['carousel_timer'] ) ? '' : $carousel->carousel_data['carousel_timer'] ),

@@ -16,27 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-
-/**
- * Helper function for displaying a carousel
- * 
- * @param string $carousel_name The name/title for the carousel to display
- * @return void No return value
- */
-function wpp_carousel( $options ) {
-	\WPP\Carousel\Plugin::display_carousel( $options );
-}
-
-/**
- * Helper function for displaying a carousel
- * 
- * @param string $carousel_name The name/title for the carousel to display
- * @return void No return value
- */
-function get_wpp_carousel( $options ) {
-	\WPP\Carousel\Plugin::get_carousel( $options );
-}

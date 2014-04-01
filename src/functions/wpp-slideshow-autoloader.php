@@ -16,8 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
-defined( 'WPP_CAROUSEL_NAMESPACE_PATH' ) or die(); //Required down the road as well
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_NAMESPACE_PATH' ) or die(); //Required down the road as well
 /**
  * Autoloader function for loading classes based on namespace
  *
@@ -29,12 +29,12 @@ defined( 'WPP_CAROUSEL_NAMESPACE_PATH' ) or die(); //Required down the road as w
  * @return void No return value
  * @version 1.0.1
  */
-if ( ! function_exists( 'wpp_carousel_spl_autoload' ) ) {
-	function wpp_carousel_spl_autoload( $class ) {
-		if ( substr( $class, 0, 12 ) !== "WPP\Carousel" ) return; //If we are not working with WPP\Carousel namespace request skip the rest of the checks
+if ( ! function_exists( 'wpp_slideshow_spl_autoload' ) ) {
+	function wpp_slideshow_spl_autoload( $class ) {
+		if ( substr( $class, 0, 13 ) !== "WPP\Slideshow" ) return; //If we are not working with WPP\Carousel namespace request skip the rest of the checks
 		$folders = explode( '\\', str_replace( '_', '-', strtolower( $class ) ) ); // Lowercase class, replace _ with -, then explode base on namespace seperator
 		$class_name = array_pop( $folders ); // The class name should be the last item in the array
-		$class_path = WPP_CAROUSEL_NAMESPACE_PATH; // Set the starting path to the carousel name space path
+		$class_path = WPP_SLIDESHOW_NAMESPACE_PATH; // Set the starting path to the carousel name space path
 		foreach ( $folders as $folder ) { // Loop through the folders to build the path
 			$class_path .= DIRECTORY_SEPARATOR . $folder; // Ammend the new folder
 		}
@@ -50,4 +50,4 @@ if ( ! function_exists( 'wpp_carousel_spl_autoload' ) ) {
 		unset( $folders, $class_name, $class_path ); // Clean up
 	}
 }
-spl_autoload_register ( 'wpp_carousel_spl_autoload' ); // Register the autoloader
+spl_autoload_register ( 'wpp_slideshow_spl_autoload' ); // Register the autoloader

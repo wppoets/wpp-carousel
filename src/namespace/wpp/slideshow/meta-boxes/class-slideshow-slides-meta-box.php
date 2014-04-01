@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Meta_Boxes;
+<?php namespace WPP\Slideshow\Meta_Boxes;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,26 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
- class Carousel_Slide_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
+ class Slideshow_Slides_Meta_Box extends \WPP\Slideshow\Base\Meta_Box {
 
 	/** Used to set the meta-box ID */
-	const ID = 'wpp-carousel-slide-meta-box';
+	const ID = 'wpp-slideshow-slides-meta-box';
 
 	/** Used to store the meta-box title */
 	const TITLE = 'Slides';
 
 	/** Used to store the plugin file location */
-	const PLUGIN_FILE = WPP_CAROUSEL_PLUGIN_FILE;
+	const PLUGIN_FILE = WPP_SLIDESHOW_PLUGIN_FILE;
 
 	/** Used to store the asset version */
-	const ASSET_VER = WPP_CAROUSEL_ASSETS_VERSION_NUM;
+	const ASSET_VER = WPP_SLIDESHOW_ASSETS_VERSION_NUM;
 
 	/** Used to store the text domain */
-	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const TEXT_DOMAIN = WPP_SLIDESHOW_TEXT_DOMAIN;
 
 	/** Used to store the nonce action */
 	const NONCE_ACTION = __FILE__;
@@ -62,16 +62,16 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 	//const AJAX_SUFFIX = ''; // If left empty will use ID
 
 	/** Used to store the form prefex */
-	const HTML_FORM_PREFIX = 'wpp_carousel_slide_fields'; // should only use [a-z0-9_]
+	const HTML_FORM_PREFIX = 'wpp_slideshow_slide_fields'; // should only use [a-z0-9_]
 
 	/** Used to store the form prefex */
-	const HTML_CLASS_PREFIX = 'wpp-carousel-slide-'; // should only use [a-z0-9_-]
+	const HTML_CLASS_PREFIX = 'wpp-slideshow-slides-'; // should only use [a-z0-9_-]
 
 	/** Used to store the form prefex */
-	const HTML_ID_PREFIX = 'wpp-carousel-slide-'; // should only use [a-z0-9_-]
+	const HTML_ID_PREFIX = 'wpp-slideshow-slides-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
-	const METADATA_KEY_PREFIX = '_wpp_carousel_slide_';
+	const METADATA_KEY_PREFIX = '_wpp_slideshow_slide_';
 
 	///** Used to enable ajax callbacks */
 	//const ENABLE_AJAX = FALSE;
@@ -141,7 +141,7 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 				<tfoot><tr><td class="<?php echo static::HTML_CLASS_PREFIX; ?>buttons" colspan="4"><button class="<?php echo static::HTML_CLASS_PREFIX; ?>add-slide" type="button"><?php echo __( 'Add Slide', static::TEXT_DOMAIN ); ?></button></td></tr></tfoot>
 			</table>
 			<script>
-				var wpp_carousel_slides = {
+				var wpp_slideshow_slides = {
 					'post_id'            : <?php echo $post->ID; ?>,
 					'next_row'           : 1,
 					'visible_slides'     : 0,
@@ -198,25 +198,25 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 			</div>
 			<script>
 			<?php foreach( $options[ 'slide_types' ] as $slide_type => $slide_class ) : ?>
-				wpp_carousel_slides.slide_type_options.<?php echo $slide_type; ?> = {
+				wpp_slideshow_slides.slide_type_options.<?php echo $slide_type; ?> = {
 					has_image    : <?php echo ( $slide_class::has_image() ) ? 'true' : 'false' ;?>,
 					allow_image_change : <?php echo ( $slide_class::allow_image_change() ) ? 'true' : 'false' ;?>,
 				};
-				wpp_carousel_slides.slide_type.<?php echo $slide_type; ?> = function( row_id ) {
+				wpp_slideshow_slides.slide_type.<?php echo $slide_type; ?> = function( row_id ) {
 					var content = '';
 					<?php echo $slide_class::get_javascript_form_fields( self::HTML_ID_PREFIX, self::HTML_CLASS_PREFIX, self::HTML_FORM_PREFIX ); ?>
 
 					return content;
 				};
 			<?php endforeach; ?>
-				wpp_carousel_slides.new_row = function( row_id, slide_type ) {
+				wpp_slideshow_slides.new_row = function( row_id, slide_type ) {
 					var image_div = ' <?php echo self::HTML_CLASS_PREFIX; ?>image-not-selected';
 					var image_change = '(<a class="<?php echo self::HTML_CLASS_PREFIX; ?>select-image-button" href="#">change</a>)';
-					if(wpp_carousel_slides.slide_type_options[ slide_type ]){
-						if(wpp_carousel_slides.slide_type_options[ slide_type ].has_image == 'false') {
+					if(wpp_slideshow_slides.slide_type_options[ slide_type ]){
+						if(wpp_slideshow_slides.slide_type_options[ slide_type ].has_image == 'false') {
 							image_div = ' <?php echo self::HTML_CLASS_PREFIX; ?>image-not-available';
 						}
-						if(wpp_carousel_slides.slide_type_options[ slide_type ].allow_image_change == 'false') {
+						if(wpp_slideshow_slides.slide_type_options[ slide_type ].allow_image_change == 'false') {
 							image_change = '';
 						}
 					}
@@ -234,8 +234,8 @@ defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used
 							'</td>',
 							'<td class="<?php echo self::HTML_CLASS_PREFIX; ?>colunm-3">',
 					].join('');
-					if ( wpp_carousel_slides.slide_types.indexOf( slide_type ) != -1 ) {
-						content = content + wpp_carousel_slides.slide_type[ slide_type ]( row_id );
+					if ( wpp_slideshow_slides.slide_types.indexOf( slide_type ) != -1 ) {
+						content = content + wpp_slideshow_slides.slide_type[ slide_type ]( row_id );
 					}
 					content = content + [
 							'</td>',

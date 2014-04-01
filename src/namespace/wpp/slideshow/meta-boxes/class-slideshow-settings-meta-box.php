@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Meta_Boxes;
+<?php namespace WPP\Slideshow\Meta_Boxes;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,26 +16,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
+class Slideshow_Settings_Meta_Box extends \WPP\Slideshow\Base\Meta_Box {
  	
 	/** Used to set the meta-box ID */
-	const ID = 'wpp-carousel-meta-box';
+	const ID = 'wpp-slideshow-settings-meta-box';
 
 	/** Used to store the meta-box title */
 	const TITLE = 'Settings';
 
 	/** Used to store the plugin file location */
-	const PLUGIN_FILE = WPP_CAROUSEL_PLUGIN_FILE;
+	const PLUGIN_FILE = WPP_SLIDESHOW_PLUGIN_FILE;
 
 	/** Used to store the asset version */
-	const ASSET_VER = WPP_CAROUSEL_ASSETS_VERSION_NUM;
+	const ASSET_VER = WPP_SLIDESHOW_ASSETS_VERSION_NUM;
 
 	/** Used to store the text domain */
-	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const TEXT_DOMAIN = WPP_SLIDESHOW_TEXT_DOMAIN;
 
 	/** Used to store the nonce action */
 	const NONCE_ACTION = __FILE__;
@@ -62,16 +62,16 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 	//const AJAX_SUFFIX = ''; // If left empty will use ID
 
 	/** Used to store the form prefex */
-	const HTML_FORM_PREFIX = 'wpp_carousel_fields'; // should only use [a-z0-9_]
+	const HTML_FORM_PREFIX = 'wpp_slideshow_fields'; // should only use [a-z0-9_]
 
 	/** Used to store the form prefex */
-	const HTML_CLASS_PREFIX = 'wpp-carousel-'; // should only use [a-z0-9_-]
+	const HTML_CLASS_PREFIX = 'wpp-slideshow-'; // should only use [a-z0-9_-]
 
 	/** Used to store the form prefex */
-	const HTML_ID_PREFIX = 'wpp-carousel-'; // should only use [a-z0-9_-]
+	const HTML_ID_PREFIX = 'wpp-slideshow-'; // should only use [a-z0-9_-]
 
 	/** Used as the metadata key prefix */
-	const METADATA_KEY_PREFIX = '_wpp_carousel_';
+	const METADATA_KEY_PREFIX = '_wpp_slideshow_';
 
 	///** Used to enable ajax callbacks */
 	//const ENABLE_AJAX = FALSE;
@@ -124,11 +124,11 @@ class Carousel_Meta_Box extends \WPP\Carousel\Base\Meta_Box {
 		?>
 		<p>
 			<input class="<?php echo self::HTML_CLASS_PREFIX; ?>field-view-type" type="hidden" name="<?php echo self::HTML_FORM_PREFIX; ?>[view_type]" value="bootstrap_3">
-			<div class="wpp-carousel-field-block">
+			<div class="wpp-slideshow-field-block">
 				<label for="<?php echo static::ID . '-field-id-' . ++$field_counter; ?>">Carousel ID: <em>(must be unique to the page)</em></label><br />
 				<input type="text" id="<?php echo static::ID . '-field-id-' . $field_counter; ?>" name="<?php echo static::HTML_FORM_PREFIX; ?>[carousel_id]" value="<?php echo ( empty( $form_data['carousel_id'] ) ? '' : $form_data['carousel_id'] ); ?>" /><br />
 			</div>			
-			<div class="wpp-carousel-field-block">
+			<div class="wpp-slideshow-field-block">
 				<label for="<?php echo static::ID . '-field-id-' . ++$field_counter; ?>">Carousel Timer: <em>(time in milliseconds)</em></label><br />
 				<input type="text" id="<?php echo static::ID . '-field-id-' . $field_counter; ?>" name="<?php echo static::HTML_FORM_PREFIX; ?>[carousel_timer]" value="<?php echo ( empty( $form_data['carousel_timer'] ) ? '5000': $form_data['carousel_timer'] ); ?>" /><br />
 			</div>

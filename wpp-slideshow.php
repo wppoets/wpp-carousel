@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WPP Carousel of Slides
- * Plugin URI: http://wppoets.com/plugins/carousel.html
- * Description: Adds a carousel content type to your WordPress installation. With an easy to use interface you can add a slides to a carousel for displaying on your website.
+ * Plugin Name: WPP Slideshow with Carousel
+ * Plugin URI: http://wppoets.com/plugins/slideshow.html
+ * Description: Adds a slideshow content type to your WordPress installation. With an easy to use interface you can add a slides to a carousel for displaying on your website.
  * Version: 0.9.0
  * Author: WP Poets <plugins@wppoets.com>
  * Author URI: http://wppoets.com
@@ -33,20 +33,20 @@
  */
 defined( 'ABSPATH' ) or die(); // We should not be loading this outside of wordpress
 
-defined( 'WPP_CAROUSEL_VERSION_NUM' )       or define( 'WPP_CAROUSEL_VERSION_NUM', '0.9.0' );
-//defined( 'WPP_CAROUSEL_ASSETS_VERSION_NUM') or define( 'WPP_CAROUSEL_ASSETS_VERSION_NUM', WPP_CAROUSEL_VERSION_NUM ); 
-defined( 'WPP_CAROUSEL_ASSETS_VERSION_NUM') or define( 'WPP_CAROUSEL_ASSETS_VERSION_NUM', date('YmdHis') ); // Devolopment Only
-defined( 'WPP_CAROUSEL_TEXT_DOMAIN' )       or define( 'WPP_CAROUSEL_TEXT_DOMAIN', 'wpp-carousel' );
-defined( 'WPP_CAROUSEL_PLUGIN_FILE' )       or define( 'WPP_CAROUSEL_PLUGIN_FILE', __FILE__ );
-defined( 'WPP_CAROUSEL_PLUGIN_PATH' )       or define( 'WPP_CAROUSEL_PLUGIN_PATH', dirname(__FILE__ ) );
-defined( 'WPP_CAROUSEL_NAMESPACE_PATH' )    or define( 'WPP_CAROUSEL_NAMESPACE_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/namespace' );
-defined( 'WPP_CAROUSEL_FUNCTION_PATH' )     or define( 'WPP_CAROUSEL_FUNCTION_PATH', WPP_CAROUSEL_PLUGIN_PATH . '/src/functions' );
-defined( 'WPP_CAROUSEL_FILTER_FILE' )       or define( 'WPP_CAROUSEL_FILTER_FILE', 'wpp-carousel/wpp-carousel.php' );
+defined( 'WPP_SLIDESHOW_VERSION_NUM' )       or define( 'WPP_SLIDESHOW_VERSION_NUM', '0.9.0' );
+//defined( 'WPP_SLIDESHOW_ASSETS_VERSION_NUM') or define( 'WPP_SLIDESHOW_ASSETS_VERSION_NUM', WPP_SLIDESHOW_VERSION_NUM ); 
+defined( 'WPP_SLIDESHOW_ASSETS_VERSION_NUM') or define( 'WPP_SLIDESHOW_ASSETS_VERSION_NUM', date('YmdHis') ); // Devolopment Only
+defined( 'WPP_SLIDESHOW_TEXT_DOMAIN' )       or define( 'WPP_SLIDESHOW_TEXT_DOMAIN', 'wpp-slideshow' );
+defined( 'WPP_SLIDESHOW_PLUGIN_FILE' )       or define( 'WPP_SLIDESHOW_PLUGIN_FILE', __FILE__ );
+defined( 'WPP_SLIDESHOW_PLUGIN_PATH' )       or define( 'WPP_SLIDESHOW_PLUGIN_PATH', dirname(__FILE__ ) );
+defined( 'WPP_SLIDESHOW_NAMESPACE_PATH' )    or define( 'WPP_SLIDESHOW_NAMESPACE_PATH', WPP_SLIDESHOW_PLUGIN_PATH . '/src/namespace' );
+defined( 'WPP_SLIDESHOW_FUNCTION_PATH' )     or define( 'WPP_SLIDESHOW_FUNCTION_PATH', WPP_SLIDESHOW_PLUGIN_PATH . '/src/functions' );
+defined( 'WPP_SLIDESHOW_FILTER_FILE' )       or define( 'WPP_SLIDESHOW_FILTER_FILE', 'wpp-slideshow/wpp-slideshow.php' );
 
 //Include the required function files
-require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'common.php' );
-require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-autoloader.php' );
-require_once( WPP_CAROUSEL_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-carousel-helper.php' );
+require_once( WPP_SLIDESHOW_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'common.php' );
+require_once( WPP_SLIDESHOW_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-slideshow-autoloader.php' );
+require_once( WPP_SLIDESHOW_FUNCTION_PATH . DIRECTORY_SEPARATOR . 'wpp-slideshow-helper.php' );
 
 //Make the magic happen!
-\WPP\Carousel\Plugin::init();
+\WPP\Slideshow\Plugin::init();

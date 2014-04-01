@@ -36,8 +36,8 @@ if( ! defined( 'ABSPATH' ) && ! defined( 'WP_UNINSTALL_PLUGIN' ) )
  * @since 0.9.0
  * @return void No return value
  */
-function wpp_carousel_uninstall() {
+function wpp_slideshow_uninstall() {
 	
 }
 
-wpp_carousel_uninstall();
+wpp_slideshow_uninstall();

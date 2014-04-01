@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Base;
+<?php namespace WPP\Slideshow\Base;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.

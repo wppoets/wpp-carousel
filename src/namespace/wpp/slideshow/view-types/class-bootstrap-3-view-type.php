@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\View_Types;
+<?php namespace WPP\Slideshow\View_Types;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */

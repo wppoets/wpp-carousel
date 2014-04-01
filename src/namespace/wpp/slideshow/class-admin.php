@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel;
+<?php namespace WPP\Slideshow;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Admin extends \WPP\Carousel\Base\Admin {
+class Admin extends \WPP\Slideshow\Base\Admin {
 
 	/** Used to set if the class uses action_save_post */
 	const HAS_SAVE_POST = TRUE;

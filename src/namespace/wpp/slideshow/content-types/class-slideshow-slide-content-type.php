@@ -1,4 +1,4 @@
-<?php namespace WPP\Carousel\Content_Types;
+<?php namespace WPP\Slideshow\Content_Types;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <copyright@wppoets.com>
  * All rights reserved.
@@ -16,23 +16,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_CAROUSEL_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
+defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Carousel_Slide_Content_Type extends \WPP\Carousel\Base\Content_Type {
+class Slideshow_Slide_Content_Type extends \WPP\Slideshow\Base\Content_Type {
 
 	/** Used to store the post-type id */
-	const POST_TYPE= 'wpp-carousel-slide';
+	const POST_TYPE= 'wpp-slideshow-slide';
 
 	/** Used to store the singular form of the name */
-	const NAME_SINGLE = 'Carousel Slide';
+	const NAME_SINGLE = 'Slideshow Slide';
 
 	/** Used to store the plural form of the name */
-	const NAME_PLURAL = 'Carousel Slides';
+	const NAME_PLURAL = 'Slideshow Slides';
 
 	/** Used to store the text domain */
-	const TEXT_DOMAIN = WPP_CAROUSEL_TEXT_DOMAIN;
+	const TEXT_DOMAIN = WPP_SLIDESHOW_TEXT_DOMAIN;
 
 	///** Used by register_post_type args */
 	//const DESCRIPTION = '';

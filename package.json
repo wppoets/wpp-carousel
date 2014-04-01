@@ -1,21 +1,21 @@
 {
-  "name": "wpp-carousel",
+  "name": "wpp-slideshow",
   "version": "0.9.0",
-  "description": "WPP Carousel",
-  "main": "wpp-carousel.php",
+  "description": "WPP Slideshow",
+  "main": "wpp-slideshow.php",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wppoets/wpp-carousel.git"
+    "url": "https://github.com/wppoets/wpp-slideshow.git"
   },
   "author": "Michael Stutz <michaeljstutz@gmail.com>",
   "license": "GPLv2 (dual-licensed)",
   "bugs": {
-    "url": "https://github.com/wppoets/wpp-carousel/issues"
+    "url": "https://github.com/wppoets/wpp-slideshow/issues"
   },
-  "homepage": "https://github.com/wppoets/wpp-carousel",
+  "homepage": "https://github.com/wppoets/wpp-slideshow",
   "devDependencies": {
     "map-stream": "^0.1.0",
     "gulp": "^3.5.6",
