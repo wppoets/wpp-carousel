@@ -1,0 +1,3 @@
+[submodule "src/php/classes/base"]
+	path = src/php/classes/base
+	url = https://github.com/wppoets/foundation-base-classes.git

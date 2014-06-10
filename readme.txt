@@ -2,9 +2,9 @@
 Contributors: wppoets, michaeljstutz
 Tags: images, slideshows, carousel
 Requires at least: 3.8
-Tested up to: 3.8
+Tested up to: 3.9.1
 Stable tag: 1.0
-License: GPLv2 (dual-licensed)
+License: GPL-2.0 (dual-licensed)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Add a simple slideshow with carousel through a widget, shortcode, or php function call.
@@ -31,9 +31,7 @@ Because we have not had the time to complete this? and or people have not asked.
 2. Metabox Screen
 
 == Changelog ==
-= 1.0 =
-* First major release
-= 0.9 =
+= 0.1.0 =
 * Pre release version
 
 == Upgrade Notice ==

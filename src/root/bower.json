@@ -1,0 +1,8 @@
+{
+  "name": "wpp-slideshow",
+  "version": "<%= version %>",
+  "main": "src/bower",
+  "ignore": [],
+  "dependencies": {},
+  "devDependencies": {}
+}

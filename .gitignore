@@ -1,6 +1,12 @@
-.DS_Store
-logs
-*.log
-build
+#node.js
 node_modules
+
+#css
 .sass-cache
+
+#bower
+src/bower
+
+#composer
+src/php/composer
+composer.lock
