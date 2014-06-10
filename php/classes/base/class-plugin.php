@@ -1,8 +1,6 @@
-<?php namespace WPP\Slideshow;
+<?php namespace WPP\Slideshow\Base;
 /**
  * Copyright (c) 2014, WP Poets and/or its affiliates <wppoets@gmail.com>
- * Portions of this distribution are copyrighted by:
- *   Copyright (c) 2014 Michael Stutz <michaeljstutz@gmail.com>
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,11 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class Plugin extends \WPP\Slideshow\Base\Plugin {
+abstract class Plugin extends Root_Instance {
 
 	/**
 	 * Initialization point for the configuration
@@ -30,16 +27,12 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 	 * @return void No return value
 	 */
 	static public function init_config() {
-		static::set_config_instance( Config::init() ); //Required before pretty much anything!
 		parent::init_config();
-		static::set_config( 'id', 'wpp-slideshow' );
-		static::set_config( 'option_key', '' );
-		static::set_config( 'option_autoload', FALSE );
-		static::set_config( 'enable_admin_controllers', FALSE );
-		static::set_config( 'enable_admin_pages', FALSE );
-		static::set_config( 'enable_content_types', FALSE );
-		static::set_config( 'enable_meta_boxes', FALSE );
-		static::set_config( 'enable_shortcodes', FALSE );
+		static::set_default_config( 'enable_admin_sections', FALSE );
+		static::set_default_config( 'enable_admin_pages', FALSE );
+		static::set_default_config( 'enable_content_types', FALSE );
+		static::set_default_config( 'enable_meta_boxes', FALSE );
+		static::set_default_config( 'enable_shortcodes', FALSE );
 	}
 
 }
