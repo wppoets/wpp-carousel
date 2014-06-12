@@ -44,7 +44,7 @@ class Config extends \WPP\Slideshow\Base\Instance_Config {
 		static::set_config( 'base_styles_url', WPP_SLIDESHOW_BASE_URL_STYLES, TRUE );
 		static::set_config( 'extension_js', WPP_SLIDESHOW_EXTENTION_SCRIPTS, TRUE );
 		static::set_config( 'extension_css', WPP_SLIDESHOW_EXTENTION_STYLES, TRUE );
-		static::set_config( 'meta_key_prefix', '', TRUE );
+		static::set_config( 'meta_key_prefix', '_wpp_slideshow_', TRUE );
 		static::set_config( 'cache_group', WPP_SLIDESHOW_CACHE_GROUP, TRUE );
 	}
 
