@@ -19,14 +19,14 @@
 defined( 'WPP_SLIDESHOW_VERSION_NUM' ) or die(); //If the base plugin is not used we should not be here
 /**
  * Starting point for the plugin
- * 
+ *
  * Everything about the plugin starts here.
- * 
+ *
  * @author Michael Stutz <michaeljstutz@gmail.com>
- * 
+ *
  */
 class Plugin extends \WPP\Slideshow\Base\Plugin {
-	
+
 	/** Used to set the plugins ID */
 	const ID = 'wpp-slideshow';
 
@@ -35,8 +35,8 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 
 	/** Used to store the text domain */
 	const TEXT_DOMAIN = WPP_SLIDESHOW_TEXT_DOMAIN;
-	
-	/** Used to enable shortcode function */	
+
+	/** Used to enable shortcode function */
 	const SHORTCODE_ENABLE = TRUE;
 
 	/** Used to store the metadata key prefix **/
@@ -47,7 +47,7 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 
 	/** Used to store the carousel data metadata key **/
 	const METADATA_KEY_CAROUSEL_DATA = '_wpp_slideshow_data';
-	
+
 	static private $_slide_content_type = "\WPP\Slideshow\Content_Types\Slideshow_Slide_Content_Type";
 	static private $_carousel_content_type = "\WPP\Slideshow\Content_Types\Slideshow_Content_Type";
 
@@ -69,13 +69,13 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 
 	/**
 	 * Initialization point for the static class
-	 * 
+	 *
 	 * @return void No return value
 	 */
-	static public function init() {
+	static public function init($options = array()) {
 		parent::init( array(
-			'admin_controllers' => array( 
-				"\WPP\Slideshow\Admin", 
+			'admin_controllers' => array(
+				"\WPP\Slideshow\Admin",
 			),
 			'admin_controller_options' => array(
 				"\WPP\Slideshow\Admin" => array(
@@ -117,12 +117,12 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 			),
 		) );
 	}
-	
+
 	/**
 	 * WordPress action method for processing the shortcode
-	 * 
+	 *
 	 * The method processes the shortcode command
-	 * 
+	 *
 	 * @return string Returns the results of the shortcode
 	 */
 	static public function action_shortcode( $atts, $content='' ) {
@@ -130,7 +130,7 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 		if ( empty( $shortcode_tag ) ) {
 			$shortcode_tag = static::ID;
 		}
-		$options = shortcode_atts( 
+		$options = shortcode_atts(
 			self::$_default_carousel_options,
 			$atts,
 			$shortcode_tag
@@ -140,9 +140,9 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 
 	/**
 	 * Display method for the carousel
-	 * 
+	 *
 	 * The method processes the shortcode command
-	 * 
+	 *
 	 * @return string Returns the results of the shortcode
 	 */
 	static public function display_carousel( $options ) {
@@ -155,9 +155,9 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 
 	/**
 	 * Get method for the carousel
-	 * 
+	 *
 	 * The method for returning the carousel
-	 * 
+	 *
 	 * @return void No return value
 	 */
 	static public function get_carousel( $options ) {
@@ -202,7 +202,7 @@ class Plugin extends \WPP\Slideshow\Base\Plugin {
 				$slides = array_merge( $slides, $new_slides);
 			}
 		}
-		$return_value = \WPP\Slideshow\View_Types\Bootstrap_3_View_Type::get_carousel_view( array( 
+		$return_value = \WPP\Slideshow\View_Types\Bootstrap_3_View_Type::get_carousel_view( array(
 			'slides' => $slides,
 			'carousel_id' => ( empty( $carousel->carousel_data['carousel_id'] ) ? '' : $carousel->carousel_data['carousel_id'] ),
 			'carousel_timer' => ( empty( $carousel->carousel_data['carousel_timer'] ) ? '' : $carousel->carousel_data['carousel_timer'] ),
